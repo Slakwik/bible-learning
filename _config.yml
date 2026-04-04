@@ -2,6 +2,7 @@ title: "Изучение Библии"
 description: "Платформа для изучения Библии в группах и индивидуально"
 baseurl: ""
 url: ""
+permalink: pretty
 
 collections:
   lessons:
