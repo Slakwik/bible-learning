@@ -324,6 +324,25 @@ h3 { font-size: 1.2rem; margin-bottom: 0.4em; }
   line-height: 1.8;
 }
 
+.hero-verse {
+  font-family: var(--font-heading);
+  font-style: italic;
+  font-size: 1.05rem;
+  opacity: 0.8;
+  max-width: 550px;
+  margin: 0 auto 36px;
+  line-height: 1.8;
+}
+
+.hero-verse span {
+  display: block;
+  font-size: 0.85rem;
+  margin-top: 6px;
+  opacity: 0.7;
+  font-style: normal;
+  font-family: var(--font-body);
+}
+
 .features {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
