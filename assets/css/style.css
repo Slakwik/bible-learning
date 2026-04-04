@@ -306,7 +306,7 @@ h3 { font-size: 1.2rem; margin-bottom: 0.4em; }
 }
 
 .hero .container {
-  max-width: 700px;
+  max-width: 860px;
 }
 
 .hero h1 {
@@ -319,7 +319,7 @@ h3 { font-size: 1.2rem; margin-bottom: 0.4em; }
 .hero p {
   font-size: 1.15rem;
   opacity: 0.85;
-  max-width: 550px;
+  max-width: 750px;
   margin: 0 auto 36px;
   line-height: 1.8;
 }
@@ -329,7 +329,7 @@ h3 { font-size: 1.2rem; margin-bottom: 0.4em; }
   font-style: italic;
   font-size: 1.05rem;
   opacity: 0.8;
-  max-width: 550px;
+  max-width: 750px;
   margin: 0 auto 36px;
   line-height: 1.8;
 }
