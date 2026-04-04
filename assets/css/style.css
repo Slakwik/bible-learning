@@ -58,8 +58,8 @@ h3 { font-size: 1.2rem; margin-bottom: 0.4em; }
 .header-inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   height: 60px;
+  gap: 32px;
 }
 
 .logo {
@@ -67,11 +67,52 @@ h3 { font-size: 1.2rem; margin-bottom: 0.4em; }
   font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: 0.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.main-nav { display: flex; align-items: center; gap: 24px; }
-.main-nav a { color: rgba(255,255,255,0.85); font-size: 0.95rem; }
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.main-nav a {
+  color: rgba(255,255,255,0.85);
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
 .main-nav a:hover { color: #fff; }
+
+.nav-auth {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: 4px;
+  padding-left: 20px;
+  border-left: 1px solid rgba(255,255,255,0.2);
+}
+
+.nav-auth:empty { display: none; }
+
+.nav-auth a {
+  color: rgba(255,255,255,0.85);
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+.nav-auth a:hover { color: #fff; }
+
+.nav-auth .nav-user {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.nav-auth .nav-logout {
+  color: var(--accent) !important;
+}
 
 .nav-toggle {
   display: none;
@@ -721,6 +762,15 @@ h3 { font-size: 1.2rem; margin-bottom: 0.4em; }
 
   .main-nav.open { display: flex; }
   .nav-toggle { display: block; }
+
+  .nav-auth {
+    border-left: none;
+    padding-left: 0;
+    margin-left: 0;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    flex-wrap: wrap;
+  }
 
   .admin-table { font-size: 0.85rem; }
   .admin-table th, .admin-table td { padding: 8px 10px; }

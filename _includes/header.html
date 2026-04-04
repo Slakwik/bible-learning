@@ -1,10 +1,10 @@
 <header class="site-header">
   <div class="container header-inner">
     <a href="{{ '/' | relative_url }}" class="logo">📖 {{ site.title }}</a>
-    <nav class="main-nav">
+    <nav class="main-nav" id="mainNav">
       <a href="{{ '/' | relative_url }}">Главная</a>
       <a href="{{ '/lessons/' | relative_url }}">Уроки</a>
-      <span id="authNav"></span>
+      <div class="nav-auth" id="authNav"></div>
     </nav>
     <button class="nav-toggle" aria-label="Меню" id="navToggle">&#9776;</button>
   </div>

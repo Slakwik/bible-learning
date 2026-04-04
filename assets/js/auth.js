@@ -59,12 +59,12 @@
     var user = getCurrentUser();
     if (user) {
       var html = '';
-      html += '<a href="/my-answers/">Мои ответы</a> ';
+      html += '<a href="/my-answers/">Мои ответы</a>';
       if (user.role === 'admin') {
-        html += '<a href="/admin/">Админка</a> ';
+        html += '<a href="/admin/">Админка</a>';
       }
-      html += '<span style="color:rgba(255,255,255,0.6);font-size:0.85rem;">' + user.name + '</span> ';
-      html += '<a href="#" id="logoutBtn" style="color:#c9a227;">Выйти</a>';
+      html += '<span class="nav-user">' + user.name + '</span>';
+      html += '<a href="#" id="logoutBtn" class="nav-logout">Выйти</a>';
       nav.innerHTML = html;
 
       var logoutBtn = document.getElementById('logoutBtn');
