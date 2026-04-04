@@ -45,26 +45,19 @@ window.addEventListener('bible-auth-ready', function(e) {
   document.getElementById('answersApp').style.display = '';
   var currentUid = fbUser.uid;
 
-  var COURSES = {
-    james: {
-      name: 'Послание Иакова',
-      lessons: [
-        {% assign james = site.lessons | where: "course", "james" | sort: "order" %}
-        {% for lesson in james %}
-        { slug: "{{ lesson.slug }}", title: "{{ lesson.title }}", reference: "{{ lesson.reference }}" }{% unless forloop.last %},{% endunless %}
-        {% endfor %}
-      ]
-    },
-    ephesians: {
-      name: 'Послание к Ефесянам',
-      lessons: [
-        {% assign eph = site.lessons | where: "course", "ephesians" | sort: "order" %}
-        {% for lesson in eph %}
-        { slug: "{{ lesson.slug }}", title: "{{ lesson.title }}", reference: "{{ lesson.reference }}" }{% unless forloop.last %},{% endunless %}
-        {% endfor %}
-      ]
-    }
+  var COURSES = {};
+  {% assign courses_list = site.lessons | map: "course" | uniq %}
+  {% for course_id in courses_list %}
+  {% assign course_lessons = site.lessons | where: "course", course_id | sort: "order" %}
+  COURSES["{{ course_id }}"] = {
+    name: "{{ course_lessons.first.course | replace: 'james', 'Послание Иакова' | replace: 'ephesians', 'Послание к Ефесянам' | replace: 'galatians', 'Послание к Галатам' | replace: 'philippians', 'Послание к Филиппийцам' | replace: 'proverbs', 'Мудрость Соломона' }}",
+    lessons: [
+      {% for lesson in course_lessons %}
+      { slug: "{{ lesson.slug }}", title: "{{ lesson.title }}", reference: "{{ lesson.reference }}" }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    ]
   };
+  {% endfor %}
 
   var select = document.getElementById('courseSelect');
   var output = document.getElementById('answersOutput');
