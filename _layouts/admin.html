@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Админ-панель — {{ site.title }}</title>
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+</head>
+<body>
+  {% include header.html %}
+  <main class="admin-page">
+    <div class="container">
+      {{ content }}
+    </div>
+  </main>
+  {% include footer.html %}
+  <script src="{{ '/assets/js/auth.js' | relative_url }}"></script>
+  <script src="{{ '/assets/js/admin.js' | relative_url }}"></script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+title: "Изучение Библии"
+description: "Платформа для изучения Библии в группах и индивидуально"
+baseurl: ""
+url: ""
+
+collections:
+  lessons:
+    output: true
+    permalink: /lessons/:slug/
+
+defaults:
+  - scope:
+      path: ""
+      type: "lessons"
+    values:
+      layout: "lesson"
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - "*.docx"
+  - node_modules
+  - vendor

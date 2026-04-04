@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title }} — {{ site.title }}</title>
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+</head>
+<body>
+  {% include header.html %}
+  <main class="lesson-page">
+    <div class="container">
+      <div class="lesson-header">
+        <a href="{{ '/lessons/' | relative_url }}" class="back-link">&larr; Все уроки</a>
+        <h1>{{ page.title }}</h1>
+        <p class="lesson-reference">{{ page.reference }}</p>
+      </div>
+
+      <div class="lesson-content" id="lessonContent" data-lesson="{{ page.slug }}">
+        {{ content }}
+      </div>
+
+      <div class="lesson-actions">
+        <button id="saveAnswers" class="btn btn-primary">Сохранить ответы</button>
+        <span id="saveStatus" class="save-status"></span>
+      </div>
+
+      {% if page.previous_lesson or page.next_lesson %}
+      <div class="lesson-nav">
+        {% if page.previous_lesson %}
+        <a href="{{ page.previous_lesson | relative_url }}" class="btn btn-outline">&larr; Предыдущий урок</a>
+        {% endif %}
+        {% if page.next_lesson %}
+        <a href="{{ page.next_lesson | relative_url }}" class="btn btn-outline">Следующий урок &rarr;</a>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </main>
+  {% include footer.html %}
+  <script src="{{ '/assets/js/auth.js' | relative_url }}"></script>
+  <script src="{{ '/assets/js/app.js' | relative_url }}"></script>
+</body>
+</html>
