@@ -734,6 +734,80 @@ h3 { font-size: 1.2rem; margin-bottom: 0.4em; }
 .print-header { display: none; }
 .print-meta { color: var(--text-light); }
 
+/* === About page === */
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.about-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+}
+
+.about-card-icon {
+  font-size: 2.2rem;
+  margin-bottom: 12px;
+}
+
+.about-card h3 { margin-bottom: 8px; }
+.about-card p { color: var(--text-light); font-size: 0.95rem; flex: 1; }
+
+.about-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.about-meta {
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+
+.about-section {
+  padding: 40px 0;
+  border-top: 1px solid var(--border);
+}
+
+.about-section h2 { margin-bottom: 12px; }
+.about-section p { max-width: 700px; }
+
+.about-steps {
+  list-style: none;
+  counter-reset: step;
+  margin-top: 12px;
+}
+
+.about-steps li {
+  counter-increment: step;
+  padding: 8px 0 8px 40px;
+  position: relative;
+  font-size: 1.05rem;
+}
+
+.about-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  width: 28px;
+  height: 28px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* === Print === */
 @media print {
   .site-header, .site-footer, .no-print { display: none !important; }
