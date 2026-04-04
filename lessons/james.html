@@ -29,13 +29,13 @@ title: "Послание Иакова — Уроки"
 </section>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  var user = JSON.parse(localStorage.getItem('bible_current_user') || 'null');
-  if (!user) return;
-  var answers = JSON.parse(localStorage.getItem('bible_answers_' + user.username) || '{}');
-  Object.keys(answers).forEach(function(slug) {
-    var el = document.getElementById('status-' + slug);
-    if (el) el.classList.add('visible');
+window.addEventListener('bible-auth-ready', function(e) {
+  if (!e.detail.user) return;
+  BibleDB.getUserAnswers(e.detail.user.uid).then(function(answers) {
+    Object.keys(answers).forEach(function(slug) {
+      var el = document.getElementById('status-' + slug);
+      if (el) el.classList.add('visible');
+    });
   });
 });
 </script>

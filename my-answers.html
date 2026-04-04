@@ -35,13 +35,15 @@ title: "Мои ответы"
 </section>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  var user = BibleAuth.getCurrentUser();
-  if (!user) {
+window.addEventListener('bible-auth-ready', function(e) {
+  var fbUser = e.detail.user;
+  var profile = e.detail.profile;
+  if (!fbUser) {
     document.getElementById('authGate').style.display = '';
     return;
   }
   document.getElementById('answersApp').style.display = '';
+  var currentUid = fbUser.uid;
 
   var COURSES = {
     james: {
@@ -98,58 +100,62 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     var course = COURSES[courseKey];
-    var allAnswers = JSON.parse(localStorage.getItem('bible_answers_' + user.username) || '{}');
-    var hasAny = false;
+    output.innerHTML = '<p style="color:var(--text-light);">Загрузка...</p>';
 
-    var html = '<div class="print-header">';
-    html += '<h2>' + esc(course.name) + '</h2>';
-    html += '<p class="print-meta">' + esc(user.name) + '</p>';
-    html += '</div>';
+    BibleDB.getUserAnswers(currentUid).then(function(allAnswers) {
+      var hasAny = false;
+      var profileName = profile ? profile.name : '';
 
-    course.lessons.forEach(function(lesson) {
-      var answers = allAnswers[lesson.slug];
-      if (!answers) return;
+      var html = '<div class="print-header">';
+      html += '<h2>' + esc(course.name) + '</h2>';
+      html += '<p class="print-meta">' + esc(profileName) + '</p>';
+      html += '</div>';
 
-      var keys = Object.keys(answers).filter(function(k) { return k.startsWith('q'); });
-      if (keys.length === 0) return;
+      course.lessons.forEach(function(lesson) {
+        var answers = allAnswers[lesson.slug];
+        if (!answers) return;
 
-      hasAny = true;
-      html += '<div class="answer-lesson-block">';
-      html += '<h3>' + esc(lesson.title) + ' <span class="answer-ref">' + esc(lesson.reference) + '</span></h3>';
+        var keys = Object.keys(answers).filter(function(k) { return k.startsWith('q'); });
+        if (keys.length === 0) return;
 
-      if (answers._savedAt) {
-        html += '<p class="answer-date no-print">Сохранено: ' + new Date(answers._savedAt).toLocaleString('ru') + '</p>';
-      }
+        hasAny = true;
+        html += '<div class="answer-lesson-block">';
+        html += '<h3>' + esc(lesson.title) + ' <span class="answer-ref">' + esc(lesson.reference) + '</span></h3>';
 
-      keys.sort(function(a, b) {
-        var na = a.replace(/[^0-9]/g, '') || '0';
-        var nb = b.replace(/[^0-9]/g, '') || '0';
-        return parseInt(na) - parseInt(nb) || a.localeCompare(b);
-      });
-
-      keys.forEach(function(key) {
-        var qText = getQuestionText(lesson.slug, key);
-        html += '<div class="answer-item">';
-        if (qText) {
-          html += '<div class="answer-question">' + esc(qText) + '</div>';
-        } else {
-          html += '<div class="answer-question">Вопрос ' + esc(key.replace('q', '')) + '</div>';
+        if (answers._savedAt) {
+          html += '<p class="answer-date no-print">Сохранено: ' + new Date(answers._savedAt).toLocaleString('ru') + '</p>';
         }
-        html += '<div class="answer-text">' + esc(answers[key]).replace(/\n/g, '<br>') + '</div>';
+
+        keys.sort(function(a, b) {
+          var na = a.replace(/[^0-9]/g, '') || '0';
+          var nb = b.replace(/[^0-9]/g, '') || '0';
+          return parseInt(na) - parseInt(nb) || a.localeCompare(b);
+        });
+
+        keys.forEach(function(key) {
+          var qText = getQuestionText(lesson.slug, key);
+          html += '<div class="answer-item">';
+          if (qText) {
+            html += '<div class="answer-question">' + esc(qText) + '</div>';
+          } else {
+            html += '<div class="answer-question">Вопрос ' + esc(key.replace('q', '')) + '</div>';
+          }
+          html += '<div class="answer-text">' + esc(answers[key]).replace(/\n/g, '<br>') + '</div>';
+          html += '</div>';
+        });
+
         html += '</div>';
       });
 
-      html += '</div>';
+      if (!hasAny) {
+        html += '<div class="auth-gate-message" style="margin-top:24px;"><p>Вы ещё не отвечали на вопросы по этому курсу.</p></div>';
+        printBtn.style.display = 'none';
+      } else {
+        printBtn.style.display = '';
+      }
+
+      output.innerHTML = html;
     });
-
-    if (!hasAny) {
-      html += '<div class="auth-gate-message" style="margin-top:24px;"><p>Вы ещё не отвечали на вопросы по этому курсу.</p></div>';
-      printBtn.style.display = 'none';
-    } else {
-      printBtn.style.display = '';
-    }
-
-    output.innerHTML = html;
   });
 
   function esc(str) {

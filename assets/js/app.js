@@ -5,32 +5,48 @@
   if (!lessonEl) return;
 
   var lessonSlug = lessonEl.getAttribute('data-lesson');
-  var user = BibleAuth.getCurrentUser();
   var authGate = document.getElementById('authGate');
   var lessonActions = document.getElementById('lessonActions');
 
-  // Auth gate: show content only for logged-in users
-  if (!user) {
-    authGate.style.display = '';
-    return;
-  }
-  lessonEl.style.display = '';
-  lessonActions.style.display = '';
+  window.addEventListener('bible-auth-ready', function(e) {
+    var user = e.detail.user;
+    var profile = e.detail.profile;
 
-  // Load saved answers
-  function loadAnswers() {
-    if (!user) return {};
-    var all = JSON.parse(localStorage.getItem('bible_answers_' + user.username) || '{}');
-    return all[lessonSlug] || {};
-  }
-
-  // Save answers
-  function saveAnswers() {
     if (!user) {
-      showStatus('Войдите, чтобы сохранить ответы', true);
+      authGate.style.display = '';
       return;
     }
-    var all = JSON.parse(localStorage.getItem('bible_answers_' + user.username) || '{}');
+
+    lessonEl.style.display = '';
+    lessonActions.style.display = '';
+    loadAndFillAnswers(user.uid);
+  });
+
+  function loadAndFillAnswers(uid) {
+    BibleDB.getAnswers(uid, lessonSlug).then(function(saved) {
+      if (!saved) saved = {};
+      var textareas = lessonEl.querySelectorAll('textarea[data-question]');
+      textareas.forEach(function(ta) {
+        var key = ta.getAttribute('data-question');
+        if (saved[key]) ta.value = saved[key];
+      });
+
+      // Save button
+      var saveBtn = document.getElementById('saveAnswers');
+      if (saveBtn) {
+        saveBtn.addEventListener('click', function() { doSave(uid); });
+      }
+
+      // Auto-save on blur
+      textareas.forEach(function(ta) {
+        ta.addEventListener('blur', function() {
+          if (ta.value.trim()) doSave(uid);
+        });
+      });
+    });
+  }
+
+  function doSave(uid) {
     var answers = {};
     var textareas = lessonEl.querySelectorAll('textarea[data-question]');
     textareas.forEach(function(ta) {
@@ -43,10 +59,11 @@
       return;
     }
 
-    all[lessonSlug] = answers;
-    all[lessonSlug]._savedAt = new Date().toISOString();
-    localStorage.setItem('bible_answers_' + user.username, JSON.stringify(all));
-    showStatus('Ответы сохранены!', false);
+    BibleDB.saveAnswers(uid, lessonSlug, answers).then(function() {
+      showStatus('Ответы сохранены!', false);
+    }).catch(function() {
+      showStatus('Ошибка сохранения', true);
+    });
   }
 
   function showStatus(msg, isError) {
@@ -56,27 +73,4 @@
     el.style.color = isError ? '#c0392b' : 'var(--primary)';
     setTimeout(function() { el.textContent = ''; }, 3000);
   }
-
-  // Fill in saved answers
-  var saved = loadAnswers();
-  var textareas = lessonEl.querySelectorAll('textarea[data-question]');
-  textareas.forEach(function(ta) {
-    var key = ta.getAttribute('data-question');
-    if (saved[key]) ta.value = saved[key];
-  });
-
-  // Save button
-  var saveBtn = document.getElementById('saveAnswers');
-  if (saveBtn) {
-    saveBtn.addEventListener('click', saveAnswers);
-  }
-
-  // Auto-save on textarea blur
-  textareas.forEach(function(ta) {
-    ta.addEventListener('blur', function() {
-      if (user && ta.value.trim()) {
-        saveAnswers();
-      }
-    });
-  });
 })();

@@ -21,7 +21,7 @@ title: "Админ-панель"
     <thead>
       <tr>
         <th>Имя</th>
-        <th>Логин</th>
+        <th>Email</th>
         <th>Роль</th>
         <th>Действия</th>
       </tr>
@@ -75,18 +75,18 @@ title: "Админ-панель"
   <div class="modal">
     <h3 id="modalTitle">Добавить пользователя</h3>
     <form id="userForm">
-      <input type="hidden" id="editIndex" value="-1">
+      <input type="hidden" id="editUid" value="">
       <div class="form-group">
         <label for="uName">Имя</label>
         <input type="text" id="uName" required>
       </div>
       <div class="form-group">
-        <label for="uUsername">Логин</label>
-        <input type="text" id="uUsername" required>
+        <label for="uEmail">Email</label>
+        <input type="email" id="uEmail" required>
       </div>
       <div class="form-group">
-        <label for="uPassword">Пароль</label>
-        <input type="text" id="uPassword" required>
+        <label for="uPassword">Пароль (мин. 6 символов)</label>
+        <input type="password" id="uPassword">
       </div>
       <div class="form-group">
         <label for="uRole">Роль</label>

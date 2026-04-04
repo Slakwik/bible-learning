@@ -1,136 +1,120 @@
 (function() {
   'use strict';
 
-  var DEFAULT_ADMIN = {
-    username: 'admin',
-    password: 'admin123',
-    role: 'admin',
-    name: 'Администратор',
-    created: new Date().toISOString()
-  };
+  // Current user profile (from Firestore)
+  var currentProfile = null;
 
-  function getUsers() {
-    var users = JSON.parse(localStorage.getItem('bible_users') || 'null');
-    if (!users) {
-      users = [DEFAULT_ADMIN];
-      localStorage.setItem('bible_users', JSON.stringify(users));
-    }
-    return users;
-  }
-
-  function saveUsers(users) {
-    localStorage.setItem('bible_users', JSON.stringify(users));
-  }
-
-  function getCurrentUser() {
-    return JSON.parse(localStorage.getItem('bible_current_user') || 'null');
-  }
-
-  function setCurrentUser(user) {
-    if (user) {
-      var safe = { username: user.username, role: user.role, name: user.name };
-      localStorage.setItem('bible_current_user', JSON.stringify(safe));
-    } else {
-      localStorage.removeItem('bible_current_user');
-    }
-  }
-
-  function login(username, password) {
-    var users = getUsers();
-    for (var i = 0; i < users.length; i++) {
-      if (users[i].username === username && users[i].password === password) {
-        setCurrentUser(users[i]);
-        return users[i];
-      }
-    }
-    return null;
-  }
-
-  function logout() {
-    setCurrentUser(null);
-    window.location.href = '/';
-  }
-
-  // Render auth navigation
-  function renderAuthNav() {
+  function renderAuthNav(user, profile) {
     var nav = document.getElementById('authNav');
     if (!nav) return;
 
-    var user = getCurrentUser();
-    if (user) {
+    if (user && profile) {
       var html = '';
       html += '<a href="/my-answers/">Мои ответы</a>';
-      if (user.role === 'admin') {
+      if (profile.role === 'admin') {
         html += '<a href="/admin/">Админка</a>';
       }
-      html += '<span class="nav-user">' + user.name + '</span>';
+      html += '<span class="nav-user">' + escHtml(profile.name) + '</span>';
       html += '<a href="#" id="logoutBtn" class="nav-logout">Выйти</a>';
       nav.innerHTML = html;
 
-      var logoutBtn = document.getElementById('logoutBtn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', function(e) {
-          e.preventDefault();
-          logout();
+      document.getElementById('logoutBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        BibleDB.logout().then(function() {
+          window.location.href = '/';
         });
-      }
+      });
     } else {
       nav.innerHTML = '<a href="/login/">Войти</a>';
     }
   }
 
-  // Mobile nav toggle
   function initNavToggle() {
     var toggle = document.getElementById('navToggle');
-    var nav = document.querySelector('.main-nav');
-    if (toggle && nav) {
+    var navEl = document.querySelector('.main-nav');
+    if (toggle && navEl) {
       toggle.addEventListener('click', function() {
-        nav.classList.toggle('open');
+        navEl.classList.toggle('open');
       });
     }
   }
 
-  // Login form handler
   function initLoginForm() {
     var form = document.getElementById('loginForm');
     if (!form) return;
 
-    // If already logged in, redirect
-    var user = getCurrentUser();
-    if (user) {
-      window.location.href = '/lessons/';
-      return;
-    }
-
     form.addEventListener('submit', function(e) {
       e.preventDefault();
-      var username = document.getElementById('username').value.trim();
+      var email = document.getElementById('username').value.trim();
       var password = document.getElementById('password').value;
       var errorEl = document.getElementById('loginError');
+      var submitBtn = form.querySelector('button[type="submit"]');
 
-      var result = login(username, password);
-      if (result) {
-        window.location.href = '/lessons/';
-      } else {
-        errorEl.classList.add('visible');
-      }
+      errorEl.classList.remove('visible');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Вход...';
+
+      BibleDB.login(email, password)
+        .then(function() {
+          window.location.href = '/lessons/';
+        })
+        .catch(function(err) {
+          errorEl.textContent = 'Неверный email или пароль';
+          errorEl.classList.add('visible');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Войти';
+        });
     });
   }
 
-  // Expose API
+  // Auth state listener
+  BibleDB.onAuthChanged(function(user) {
+    if (user) {
+      BibleDB.getUserProfile(user.uid).then(function(profile) {
+        if (!profile) {
+          // Profile missing — create minimal one
+          profile = { name: user.email, role: 'user', email: user.email };
+          BibleDB.setUserProfile(user.uid, profile);
+        }
+        currentProfile = profile;
+        currentProfile.uid = user.uid;
+        renderAuthNav(user, profile);
+
+        // Fire custom event for other scripts
+        window.dispatchEvent(new CustomEvent('bible-auth-ready', { detail: { user: user, profile: profile } }));
+      });
+    } else {
+      currentProfile = null;
+      renderAuthNav(null, null);
+      window.dispatchEvent(new CustomEvent('bible-auth-ready', { detail: { user: null, profile: null } }));
+    }
+  });
+
+  // Expose
   window.BibleAuth = {
-    getUsers: getUsers,
-    saveUsers: saveUsers,
-    getCurrentUser: getCurrentUser,
-    setCurrentUser: setCurrentUser,
-    login: login,
-    logout: logout
+    getProfile: function() { return currentProfile; },
+    onReady: function(cb) {
+      if (currentProfile !== null || !BibleDB.getCurrentUser()) {
+        // Already resolved
+        window.addEventListener('bible-auth-ready', function handler(e) {
+          cb(e.detail.user, e.detail.profile);
+        });
+      }
+      window.addEventListener('bible-auth-ready', function(e) {
+        cb(e.detail.user, e.detail.profile);
+      });
+    }
   };
 
   // Init on DOM ready
   document.addEventListener('DOMContentLoaded', function() {
-    renderAuthNav();
     initNavToggle();
     initLoginForm();
   });
+
+  function escHtml(str) {
+    var d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
 })();
