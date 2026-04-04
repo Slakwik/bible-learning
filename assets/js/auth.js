@@ -59,6 +59,7 @@
     var user = getCurrentUser();
     if (user) {
       var html = '';
+      html += '<a href="/my-answers/">Мои ответы</a> ';
       if (user.role === 'admin') {
         html += '<a href="/admin/">Админка</a> ';
       }
