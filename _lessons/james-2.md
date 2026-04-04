@@ -2,6 +2,7 @@
 title: "Урок 2. Вера и духовный рост"
 order: 2
 reference: "Иакова 1:2-27"
+course: "james"
 slug: "james-2"
 previous_lesson: "/lessons/james-1/"
 next_lesson: "/lessons/james-3/"

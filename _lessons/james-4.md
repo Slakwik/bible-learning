@@ -2,6 +2,7 @@
 title: "Урок 4. Вера и наши слова"
 order: 4
 reference: "Иакова 3"
+course: "james"
 slug: "james-4"
 previous_lesson: "/lessons/james-3/"
 next_lesson: "/lessons/james-5/"

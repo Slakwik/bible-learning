@@ -2,6 +2,7 @@
 title: "Урок 5. Вера и борьба"
 order: 5
 reference: "Иакова 4"
+course: "james"
 slug: "james-5"
 previous_lesson: "/lessons/james-4/"
 next_lesson: "/lessons/james-6/"

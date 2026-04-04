@@ -2,6 +2,7 @@
 title: "Урок 6. Вера и практика"
 order: 6
 reference: "Иакова 5"
+course: "james"
 slug: "james-6"
 previous_lesson: "/lessons/james-5/"
 next_lesson: ""

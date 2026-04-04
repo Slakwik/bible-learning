@@ -1,29 +1,54 @@
 ---
 layout: default
-title: "Послание Иакова — Уроки"
+title: "Уроки"
 ---
 
 <section class="container">
   <div style="padding-top: 40px;">
     <a href="{{ '/' | relative_url }}" class="back-link">&larr; На главную</a>
-    <h1>Послание Иакова</h1>
-    <p style="color: var(--text-light); margin-bottom: 8px;">Общественное изучение Библии &middot; Уроки для взрослых</p>
-    <p>Книга Иакова — это книга дел. В ней 108 стихов, и из них 60 содержат конкретные повеления. Практически в каждом втором стихе есть призыв к действию!</p>
+    <h1>Уроки</h1>
+    <p style="color: var(--text-light); margin-bottom: 32px;">Выберите курс для изучения</p>
   </div>
 
+  <h2 id="james">Послание Иакова</h2>
+  <p style="color: var(--text-light); margin-bottom: 8px;">Вера и дела &middot; 6 уроков для взрослых</p>
+
   <ul class="lessons-list" id="lessonsList">
-    {% assign sorted = site.lessons | sort: "order" %}
-    {% for lesson in sorted %}
-    <li>
-      <a href="{{ lesson.url | relative_url }}" data-lesson="{{ lesson.slug }}">
-        <span class="lesson-num">{{ lesson.order }}</span>
-        <div class="lesson-info">
-          <h3>{{ lesson.title }}</h3>
-          <p>{{ lesson.reference }}</p>
-        </div>
-        <span class="lesson-status" id="status-{{ lesson.slug }}">Пройден</span>
-      </a>
-    </li>
+    {% assign james = site.lessons | where: "course", "james" | default: site.lessons | sort: "order" %}
+    {% for lesson in site.lessons %}
+      {% if lesson.slug contains "james" %}
+      <li>
+        <a href="{{ lesson.url | relative_url }}" data-lesson="{{ lesson.slug }}">
+          <span class="lesson-num">{{ lesson.order }}</span>
+          <div class="lesson-info">
+            <h3>{{ lesson.title }}</h3>
+            <p>{{ lesson.reference }}</p>
+          </div>
+          <span class="lesson-status" id="status-{{ lesson.slug }}">Пройден</span>
+        </a>
+      </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+
+  <h2 id="ephesians" style="margin-top: 48px;">Послание к Ефесянам</h2>
+  <p style="color: var(--text-light); margin-bottom: 8px;">Так говорит Библия &middot; 6 уроков для взрослых</p>
+
+  <ul class="lessons-list">
+    {% assign eph_lessons = site.lessons | sort: "order" %}
+    {% for lesson in eph_lessons %}
+      {% if lesson.slug contains "ephesians" %}
+      <li>
+        <a href="{{ lesson.url | relative_url }}" data-lesson="{{ lesson.slug }}">
+          <span class="lesson-num">{{ lesson.order }}</span>
+          <div class="lesson-info">
+            <h3>{{ lesson.title }}</h3>
+            <p>{{ lesson.reference }}</p>
+          </div>
+          <span class="lesson-status" id="status-{{ lesson.slug }}">Пройден</span>
+        </a>
+      </li>
+      {% endif %}
     {% endfor %}
   </ul>
 </section>

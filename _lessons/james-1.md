@@ -2,6 +2,7 @@
 title: "Урок 1. Вера и дела"
 order: 1
 reference: "Иакова 1:1"
+course: "james"
 slug: "james-1"
 previous_lesson: ""
 next_lesson: "/lessons/james-2/"

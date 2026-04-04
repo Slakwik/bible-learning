@@ -2,6 +2,7 @@
 title: "Урок 3. Вера и общество"
 order: 3
 reference: "Иакова 2"
+course: "james"
 slug: "james-3"
 previous_lesson: "/lessons/james-2/"
 next_lesson: "/lessons/james-4/"
