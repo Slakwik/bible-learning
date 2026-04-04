@@ -6,6 +6,16 @@
 
   var lessonSlug = lessonEl.getAttribute('data-lesson');
   var user = BibleAuth.getCurrentUser();
+  var authGate = document.getElementById('authGate');
+  var lessonActions = document.getElementById('lessonActions');
+
+  // Auth gate: show content only for logged-in users
+  if (!user) {
+    authGate.style.display = '';
+    return;
+  }
+  lessonEl.style.display = '';
+  lessonActions.style.display = '';
 
   // Load saved answers
   function loadAnswers() {

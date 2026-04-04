@@ -189,6 +189,22 @@ h3 { font-size: 1.2rem; margin-bottom: 0.4em; }
   font-size: 1.05rem;
 }
 
+/* === Auth gate === */
+.auth-gate-message {
+  text-align: center;
+  padding: 60px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin: 32px 0;
+}
+
+.auth-gate-message p {
+  color: var(--text-light);
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+}
+
 /* === Course card on landing === */
 .courses-grid {
   display: grid;

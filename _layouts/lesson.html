@@ -16,11 +16,18 @@
         <p class="lesson-reference">{{ page.reference }}</p>
       </div>
 
-      <div class="lesson-content" id="lessonContent" data-lesson="{{ page.slug }}">
+      <div class="auth-gate" id="authGate" style="display:none;">
+        <div class="auth-gate-message">
+          <p>Для доступа к содержимому урока необходимо войти в систему.</p>
+          <a href="{{ '/login/' | relative_url }}" class="btn btn-primary">Войти</a>
+        </div>
+      </div>
+
+      <div class="lesson-content" id="lessonContent" data-lesson="{{ page.slug }}" style="display:none;">
         {{ content }}
       </div>
 
-      <div class="lesson-actions">
+      <div class="lesson-actions" id="lessonActions" style="display:none;">
         <button id="saveAnswers" class="btn btn-primary">Сохранить ответы</button>
         <span id="saveStatus" class="save-status"></span>
       </div>
