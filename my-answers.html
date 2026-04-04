@@ -67,6 +67,13 @@ document.addEventListener('DOMContentLoaded', function() {
   var select = document.getElementById('courseSelect');
   var output = document.getElementById('answersOutput');
   var printBtn = document.getElementById('printBtn');
+  var questionsData = null;
+
+  // Load questions data
+  fetch('{{ "/assets/questions.json" | relative_url }}')
+    .then(function(r) { return r.json(); })
+    .then(function(data) { questionsData = data; })
+    .catch(function() { questionsData = {}; });
 
   Object.keys(COURSES).forEach(function(key) {
     var opt = document.createElement('option');
@@ -74,6 +81,13 @@ document.addEventListener('DOMContentLoaded', function() {
     opt.textContent = COURSES[key].name;
     select.appendChild(opt);
   });
+
+  function getQuestionText(slug, qid) {
+    if (questionsData && questionsData[slug] && questionsData[slug][qid]) {
+      return questionsData[slug][qid];
+    }
+    return null;
+  }
 
   select.addEventListener('change', function() {
     var courseKey = this.value;
@@ -114,9 +128,13 @@ document.addEventListener('DOMContentLoaded', function() {
       });
 
       keys.forEach(function(key) {
-        var label = key.replace('q', 'Вопрос ');
+        var qText = getQuestionText(lesson.slug, key);
         html += '<div class="answer-item">';
-        html += '<div class="answer-question">' + esc(label) + '</div>';
+        if (qText) {
+          html += '<div class="answer-question">' + esc(qText) + '</div>';
+        } else {
+          html += '<div class="answer-question">Вопрос ' + esc(key.replace('q', '')) + '</div>';
+        }
         html += '<div class="answer-text">' + esc(answers[key]).replace(/\n/g, '<br>') + '</div>';
         html += '</div>';
       });
