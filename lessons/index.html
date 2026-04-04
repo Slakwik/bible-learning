@@ -1,66 +1,43 @@
 ---
 layout: default
-title: "Уроки"
+title: "Курсы"
 ---
 
 <section class="container">
   <div style="padding-top: 40px;">
     <a href="{{ '/' | relative_url }}" class="back-link">&larr; На главную</a>
-    <h1>Уроки</h1>
-    <p style="color: var(--text-light); margin-bottom: 32px;">Выберите курс для изучения</p>
+    <h1>Курсы</h1>
+    <p style="color: var(--text-light); margin-bottom: 32px;">Выберите книгу для изучения</p>
   </div>
 
-  <h2 id="james">Послание Иакова</h2>
-  <p style="color: var(--text-light); margin-bottom: 8px;">Вера и дела &middot; 6 уроков для взрослых</p>
-
-  <ul class="lessons-list" id="lessonsList">
-    {% assign james = site.lessons | where: "course", "james" | default: site.lessons | sort: "order" %}
-    {% for lesson in site.lessons %}
-      {% if lesson.slug contains "james" %}
-      <li>
-        <a href="{{ lesson.url | relative_url }}" data-lesson="{{ lesson.slug }}">
-          <span class="lesson-num">{{ lesson.order }}</span>
-          <div class="lesson-info">
-            <h3>{{ lesson.title }}</h3>
-            <p>{{ lesson.reference }}</p>
-          </div>
-          <span class="lesson-status" id="status-{{ lesson.slug }}">Пройден</span>
-        </a>
-      </li>
-      {% endif %}
-    {% endfor %}
-  </ul>
-
-  <h2 id="ephesians" style="margin-top: 48px;">Послание к Ефесянам</h2>
-  <p style="color: var(--text-light); margin-bottom: 8px;">Так говорит Библия &middot; 6 уроков для взрослых</p>
-
-  <ul class="lessons-list">
-    {% assign eph_lessons = site.lessons | sort: "order" %}
-    {% for lesson in eph_lessons %}
-      {% if lesson.slug contains "ephesians" %}
-      <li>
-        <a href="{{ lesson.url | relative_url }}" data-lesson="{{ lesson.slug }}">
-          <span class="lesson-num">{{ lesson.order }}</span>
-          <div class="lesson-info">
-            <h3>{{ lesson.title }}</h3>
-            <p>{{ lesson.reference }}</p>
-          </div>
-          <span class="lesson-status" id="status-{{ lesson.slug }}">Пройден</span>
-        </a>
-      </li>
-      {% endif %}
-    {% endfor %}
-  </ul>
+  <div class="courses-grid">
+    <a href="{{ '/lessons/james/' | relative_url }}" class="course-card" style="text-decoration:none;color:inherit;">
+      <div class="course-card-header">
+        <h3>Послание Иакова</h3>
+        <p>Вера и дела</p>
+      </div>
+      <div class="course-card-body">
+        <div class="course-meta">
+          <span>&#128218; 6 уроков</span>
+          <span>&#128336; Для взрослых</span>
+        </div>
+        <p>Практическое изучение послания Иакова. Как наша вера проявляется в конкретных делах.</p>
+        <span class="btn btn-outline btn-sm">Перейти к урокам</span>
+      </div>
+    </a>
+    <a href="{{ '/lessons/ephesians/' | relative_url }}" class="course-card" style="text-decoration:none;color:inherit;">
+      <div class="course-card-header" style="background: linear-gradient(135deg, #3a4a7a 0%, #5a6aaa 100%);">
+        <h3>Послание к Ефесянам</h3>
+        <p>Так говорит Библия</p>
+      </div>
+      <div class="course-card-body">
+        <div class="course-meta">
+          <span>&#128218; 6 уроков</span>
+          <span>&#128336; Для взрослых</span>
+        </div>
+        <p>Богатство нашей позиции во Христе. Единство церкви и всеоружие Божье.</p>
+        <span class="btn btn-outline btn-sm">Перейти к урокам</span>
+      </div>
+    </a>
+  </div>
 </section>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  var user = JSON.parse(localStorage.getItem('bible_current_user') || 'null');
-  if (!user) return;
-  var answers = JSON.parse(localStorage.getItem('bible_answers_' + user.username) || '{}');
-  Object.keys(answers).forEach(function(slug) {
-    var el = document.getElementById('status-' + slug);
-    if (el) el.classList.add('visible');
-  });
-});
-</script>
