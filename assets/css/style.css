@@ -149,6 +149,14 @@ h3 { font-size: 1.2rem; margin-bottom: 0.4em; }
   max-width: 520px;
 }
 
+.signup-card--wide { max-width: 680px; }
+
+.signup-card iframe {
+  display: block;
+  border: none;
+  border-radius: var(--radius);
+}
+
 .signup-card h2 { text-align: center; margin-bottom: 8px; }
 
 .signup-intro {
