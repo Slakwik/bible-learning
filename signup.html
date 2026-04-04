@@ -1,0 +1,81 @@
+---
+layout: default
+title: "Записаться на изучение Библии"
+---
+
+<section class="signup-page">
+  <div class="signup-card">
+    <h2>Записаться на изучение</h2>
+    <p class="signup-intro">Заполните форму, и мы свяжемся с вами для организации занятий.</p>
+
+    <form id="signupForm" action="https://formsubmit.co/info@spbchurch.ru" method="POST">
+      <!-- FormSubmit settings -->
+      <input type="hidden" name="_subject" value="Новая заявка на изучение Библии">
+      <input type="hidden" name="_captcha" value="true">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_next" value="{{ '/' | absolute_url }}signup-thanks/">
+      <input type="text" name="_honey" style="display:none">
+
+      <div class="form-group">
+        <label for="firstName">Имя <span class="required">*</span></label>
+        <input type="text" id="firstName" name="Имя" required>
+      </div>
+
+      <div class="form-group">
+        <label for="lastName">Фамилия <span class="required">*</span></label>
+        <input type="text" id="lastName" name="Фамилия" required>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email <span class="required">*</span></label>
+        <input type="email" id="email" name="Email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Телефон</label>
+        <input type="tel" id="phone" name="Телефон" placeholder="+7 (___) ___-__-__">
+      </div>
+
+      <div class="form-group">
+        <label>Посещаете ли вы церковь? <span class="required">*</span></label>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="Посещает церковь" value="Да" id="churchYes" required>
+            <span>Да</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="Посещает церковь" value="Нет" id="churchNo">
+            <span>Нет</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group" id="denominationGroup" style="display:none;">
+        <label for="denomination">Название / деноминация церкви</label>
+        <input type="text" id="denomination" name="Деноминация церкви" placeholder="Например: Баптистская, Пятидесятническая...">
+      </div>
+
+      <div class="form-group">
+        <label for="message">Комментарий</label>
+        <textarea id="message" name="Комментарий" rows="3" placeholder="Расскажите немного о себе или задайте вопрос..."></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Отправить заявку</button>
+    </form>
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var yesRadio = document.getElementById('churchYes');
+  var noRadio = document.getElementById('churchNo');
+  var denomGroup = document.getElementById('denominationGroup');
+
+  function toggle() {
+    denomGroup.style.display = yesRadio.checked ? '' : 'none';
+  }
+
+  yesRadio.addEventListener('change', toggle);
+  noRadio.addEventListener('change', toggle);
+});
+</script>
