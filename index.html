@@ -7,7 +7,7 @@ title: "Изучение Библии — Главная"
   <div class="container">
     <h1>Изучение Библии</h1>
     <p>Платформа для совместного изучения Священного Писания. Уроки, вопросы для размышления и практическое применение.</p>
-    <a href="{{ '/signup/' | relative_url }}" class="btn btn-accent">Начать изучение</a>
+    <a href="{{ '/signup/' | relative_url }}" class="btn btn-accent" id="heroSignupBtn" style="display:none;">Подать заявку</a>
   </div>
 </section>
 
@@ -108,3 +108,12 @@ title: "Изучение Библии — Главная"
     </a>
   </div>
 </section>
+
+<script>
+window.addEventListener('bible-auth-ready', function(e) {
+  var btn = document.getElementById('heroSignupBtn');
+  if (btn && !e.detail.user) {
+    btn.style.display = '';
+  }
+});
+</script>
