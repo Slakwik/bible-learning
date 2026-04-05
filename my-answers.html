@@ -50,7 +50,7 @@ window.addEventListener('bible-auth-ready', function(e) {
   {% for course_id in courses_list %}
   {% assign course_lessons = site.lessons | where: "course", course_id | sort: "order" %}
   COURSES["{{ course_id }}"] = {
-    name: "{{ course_lessons.first.course | replace: 'james', 'Послание Иакова' | replace: 'ephesians', 'Послание к Ефесянам' | replace: 'galatians', 'Послание к Галатам' | replace: 'philippians', 'Послание к Филиппийцам' | replace: 'proverbs', 'Мудрость Соломона' }}",
+    name: "{{ course_lessons.first.course | replace: 'james', 'Послание Иакова' | replace: 'ephesians', 'Послание к Ефесянам' | replace: 'galatians', 'Послание к Галатам' | replace: 'philippians', 'Послание к Филиппийцам' | replace: 'proverbs', 'Мудрость Соломона' | replace: 'christian-life', 'Жизнь христианина' }}",
     lessons: [
       {% for lesson in course_lessons %}
       { slug: "{{ lesson.slug }}", title: "{{ lesson.title }}", reference: "{{ lesson.reference }}" }{% unless forloop.last %},{% endunless %}
