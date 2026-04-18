@@ -236,31 +236,45 @@ def make_pdf(filename):
         ('Жизнь христианина', '12 уроков', 'Филимону, 1-3 Иоанна, Иуды', HexColor('#2a6a5a')),
         ('Второзаконие', '12 уроков', 'Второзаконие 1-34', HexColor('#4a3a6a')),
         ('Евангелие от Марка', '18 уроков', 'Марк 1-16', HexColor('#3a6a4a')),
+        ('Бытие (часть 1)', '15 уроков', 'Быт. 1-25', HexColor('#7a4a3a')),
+        ('Бытие (часть 2)', '15 уроков', 'Быт. 25-50', HexColor('#8a5a4a')),
+        ('Иисус Навин', '6 уроков', 'Нав. 1-24', HexColor('#3a5a7a')),
+        ('Амос и Исаия', '15 уроков', 'Амос, Исаия', HexColor('#5a4a2a')),
+        ('Даниил', '12 уроков', 'Дан. 1-12', HexColor('#4a3a5a')),
+        ('Деяния (часть 1)', '15 уроков', 'Деян. 1-15', HexColor('#3a6a7a')),
+        ('Деяния (часть 2)', '15 уроков', 'Деян. 15-28', HexColor('#2a6a6a')),
+        ('1 Коринфянам', '17 уроков', '1 Кор. 1-16', HexColor('#6a3a4a')),
+        ('2 Коринфянам', '12 уроков', '2 Кор. 1-13', HexColor('#7a3a4a')),
+        ('1-2 Фессалоникийцам', '6 уроков', '1-2 Фесс.', HexColor('#5a5a2a')),
+        ('Послание 1 Иоанна', '6 уроков', '1 Ин. 1-5', HexColor('#2a5a4a')),
+        ('Если будете молиться', '8 уроков', 'Молитва', HexColor('#4a4a7a')),
+        ('Библия: Божья удивительная книга', '7 уроков', 'Обзор Библии', HexColor('#3a4a5a')),
     ]
 
-    y = H - 140
-    for name, count, desc, color in courses:
-        c.setFillColor(color)
-        c.roundRect(80, y - 6, 8, 36, 4, fill=1, stroke=0)
-        c.setFillColor(TEXT)
-        c.setFont(FONT_BOLD, 15)
-        c.drawString(100, y + 10, name)
-        c.setFillColor(TEXT_LIGHT)
-        c.setFont(FONT, 12)
-        c.drawString(100, y - 6, f'{count}  \u00b7  {desc}')
-        y -= 55
+    # Two columns with 11/10 courses each
+    mid = (len(courses) + 1) // 2
+    col1 = courses[:mid]
+    col2 = courses[mid:]
+    row_h = 38
+    top_y = H - 130
+    for col_courses, x0 in [(col1, 60), (col2, W / 2 + 20)]:
+        y = top_y
+        for name, count, desc, color in col_courses:
+            c.setFillColor(color)
+            c.roundRect(x0, y - 4, 6, 28, 3, fill=1, stroke=0)
+            c.setFillColor(TEXT)
+            c.setFont(FONT_BOLD, 12)
+            c.drawString(x0 + 16, y + 10, name)
+            c.setFillColor(TEXT_LIGHT)
+            c.setFont(FONT, 10)
+            c.drawString(x0 + 16, y - 4, f'{count}  \u00b7  {desc}')
+            y -= row_h
 
-    # Stats
-    stats = [('8', 'курсов'), ('78', 'уроков'), ('1200+', 'вопросов')]
-    sx = 520
-    for num, label in stats:
-        c.setFillColor(PRIMARY)
-        c.setFont(FONT_BOLD, 40)
-        c.drawCentredString(sx, H - 220, num)
-        c.setFillColor(TEXT_LIGHT)
-        c.setFont(FONT, 12)
-        c.drawCentredString(sx, H - 245, label)
-        sx += 120
+    # Stats row at bottom — inline label:num pairs, compact
+    c.setFont(FONT_BOLD, 18)
+    c.setFillColor(PRIMARY)
+    stat_text = '21 курс  \u00b7  227 уроков  \u00b7  3000+ вопросов'
+    c.drawCentredString(W / 2, 55, stat_text)
 
     draw_footer(c, 4, TOTAL)
     c.showPage()
