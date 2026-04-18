@@ -6,7 +6,16 @@
   <title>{{ page.title }} — {{ site.title }}</title>
   <link rel="icon" href="{{ '/favicon.ico' | relative_url }}" type="image/x-icon">
   <link rel="icon" href="{{ '/assets/img/favicon.png' | relative_url }}" type="image/png">
+  <script>
+    (function () {
+      var defaultTheme = '{{ site.default_theme | default: "original" }}';
+      var saved = null;
+      try { saved = localStorage.getItem('bible-theme'); } catch (e) {}
+      document.documentElement.setAttribute('data-theme', saved || defaultTheme);
+    })();
+  </script>
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/assets/css/themes.css' | relative_url }}">
 </head>
 <body>
   {% include header.html %}

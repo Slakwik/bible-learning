@@ -11,6 +11,9 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
       // Allow creating own profile on first login
       allow create: if request.auth != null && request.auth.uid == userId;
+      // Users can update their own profile but cannot change their role
+      allow update: if request.auth != null && request.auth.uid == userId
+        && (!('role' in request.resource.data) || request.resource.data.role == resource.data.role);
     }
 
     // Answers

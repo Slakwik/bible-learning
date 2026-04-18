@@ -11,6 +11,7 @@
     if (user && profile) {
       var html = '';
       html += '<a href="/my-answers/">Мои ответы</a>';
+      html += '<a href="/profile/">Профиль</a>';
       if (profile.role === 'admin') {
         html += '<a href="/admin/">Админка</a>';
       }
