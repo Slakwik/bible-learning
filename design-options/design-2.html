@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Очаг — Дизайн 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400;1,9..144,500&family=Newsreader:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf6ef;
+    --bg-2: #f1e9d8;
+    --bg-3: #e8dec8;
+    --ink: #2a221a;
+    --ink-soft: #6b5d4c;
+    --ink-faint: #9c8d7a;
+    --terracotta: #c66a4f;
+    --terracotta-dark: #a4543e;
+    --terracotta-pale: #f0d4c8;
+    --sage: #6b8e63;
+    --sage-pale: #d6e2cd;
+    --gold: #c89a3a;
+    --gold-pale: #f2e2b8;
+    --line: #ddd0b8;
+    --shadow: 0 1px 2px rgba(72, 44, 16, 0.04), 0 4px 16px rgba(72, 44, 16, 0.06);
+    --shadow-lg: 0 4px 8px rgba(72, 44, 16, 0.06), 0 16px 40px rgba(72, 44, 16, 0.10);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Subtle warm gradient atmosphere */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; pointer-events: none; z-index: -1;
+    background:
+      radial-gradient(circle at 80% 0%, rgba(198, 106, 79, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 0% 100%, rgba(107, 142, 99, 0.06) 0%, transparent 40%);
+  }
+
+  ::selection { background: var(--terracotta); color: var(--bg); }
+
+  /* ============ Top nav ============ */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(250, 246, 239, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 19px;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .brand-icon {
+    width: 32px; height: 32px;
+    background: var(--terracotta);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--bg);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 18px;
+    box-shadow: 0 2px 6px rgba(198, 106, 79, 0.3);
+  }
+  .nav-links {
+    display: flex; gap: 8px; align-items: center;
+  }
+  .nav-links a {
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-family: 'Newsreader', serif;
+    font-size: 15px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .nav-links a:hover { background: var(--bg-2); color: var(--ink); }
+  .nav-links a.active {
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .nav-cta {
+    margin-left: 12px;
+    padding: 9px 20px;
+    background: var(--terracotta);
+    color: var(--bg);
+    border-radius: 999px;
+    font-family: 'Newsreader', serif;
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(198, 106, 79, 0.25);
+    border: none;
+  }
+  .nav-cta:hover {
+    background: var(--terracotta-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(198, 106, 79, 0.35);
+  }
+
+  /* ============ Section system ============ */
+  .section { display: none; }
+  .section.active { display: block; animation: fadeUp 0.5s ease; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* ============ HERO ============ */
+  .hero {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 80px 32px 100px;
+    position: relative;
+  }
+
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 14px;
+    background: var(--terracotta-pale);
+    color: var(--terracotta-dark);
+    border-radius: 999px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 32px;
+  }
+  .hero-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--terracotta-dark);
+    border-radius: 50%;
+  }
+
+  .hero-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: clamp(52px, 8vw, 96px);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 36px;
+    max-width: 880px;
+    font-variation-settings: "opsz" 144, "SOFT" 50;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--terracotta);
+    font-variation-settings: "opsz" 144, "SOFT" 100;
+    position: relative;
+  }
+  .hero-title em.highlight {
+    background: linear-gradient(120deg, transparent 0%, transparent 5%, var(--gold-pale) 5%, var(--gold-pale) 95%, transparent 95%);
+    padding: 0 6px;
+  }
+
+  .hero-lead {
+    font-family: 'Newsreader', serif;
+    font-weight: 300;
+    font-size: 22px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 620px;
+    margin-bottom: 48px;
+  }
+
+  .hero-actions { display: flex; gap: 16px; align-items: center; margin-bottom: 80px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 24px;
+    border-radius: 999px;
+    font-family: 'Newsreader', serif;
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+  }
+  .btn-primary {
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .btn-primary:hover { background: var(--terracotta); transform: translateY(-1px); }
+  .btn-ghost {
+    color: var(--ink);
+    border: 1px solid var(--line);
+    background: transparent;
+  }
+  .btn-ghost:hover { background: var(--bg-2); border-color: var(--ink-soft); }
+
+  .hero-quote {
+    background: var(--bg-2);
+    border-radius: 24px;
+    padding: 40px 48px;
+    position: relative;
+    max-width: 720px;
+    border-left: 4px solid var(--sage);
+    box-shadow: var(--shadow);
+  }
+  .hero-quote-svg {
+    position: absolute; top: -20px; left: 32px;
+    width: 56px; height: 56px;
+    background: var(--bg);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--sage);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 36px;
+    line-height: 1;
+    box-shadow: var(--shadow);
+  }
+  .hero-quote-text {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 22px;
+    line-height: 1.45;
+    color: var(--ink);
+    margin-top: 8px;
+  }
+  .hero-quote-cite {
+    margin-top: 18px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+  }
+
+  /* Floating illustration */
+  .hero-illust {
+    position: absolute;
+    right: 0; top: 60px;
+    width: 240px; height: 240px;
+    opacity: 0.85;
+  }
+  @media (max-width: 1100px) { .hero-illust { display: none; } }
+
+  /* ============ COURSES ============ */
+  .courses-wrap {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 80px 32px 100px;
+  }
+  .page-header { margin-bottom: 60px; max-width: 760px; }
+  .page-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--terracotta);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+  .page-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 1.05;
+    color: var(--ink);
+    letter-spacing: -0.015em;
+    margin-bottom: 18px;
+    font-variation-settings: "opsz" 144, "SOFT" 50;
+  }
+  .page-title em {
+    font-style: italic; color: var(--terracotta);
+    font-variation-settings: "opsz" 144, "SOFT" 100;
+  }
+  .page-lead {
+    font-size: 19px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+
+  .filter-row {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 40px; padding-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+  }
+  .chip {
+    padding: 7px 16px;
+    background: var(--bg-2);
+    border-radius: 999px;
+    font-family: 'Newsreader', serif;
+    font-size: 14px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+  }
+  .chip:hover { background: var(--bg-3); color: var(--ink); }
+  .chip.active {
+    background: var(--ink); color: var(--bg);
+  }
+
+  .course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+  }
+  .course-card {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    position: relative;
+  }
+  .course-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--terracotta-pale);
+  }
+  .course-card-illustration {
+    height: 140px;
+    position: relative;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ci-1 { background: linear-gradient(135deg, #f0d4c8 0%, #f5e3d3 100%); }
+  .ci-2 { background: linear-gradient(135deg, #d6e2cd 0%, #e3eed8 100%); }
+  .ci-3 { background: linear-gradient(135deg, #f2e2b8 0%, #f7ecc7 100%); }
+  .ci-4 { background: linear-gradient(135deg, #e1d4f0 0%, #ece0f5 100%); }
+  .ci-5 { background: linear-gradient(135deg, #c8e0e2 0%, #d5e8eb 100%); }
+  .ci-6 { background: linear-gradient(135deg, #f0c8c8 0%, #f5d4d4 100%); }
+
+  .course-card-body { padding: 24px 26px 26px; }
+  .course-card-meta {
+    display: flex; gap: 12px; align-items: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+  }
+  .course-card-meta .dot { width: 4px; height: 4px; background: var(--ink-faint); border-radius: 50%; }
+  .course-card-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 1.15;
+    color: var(--ink);
+    margin-bottom: 8px;
+    font-variation-settings: "opsz" 144;
+  }
+  .course-card-desc {
+    font-size: 15px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+    margin-bottom: 16px;
+  }
+  .course-card-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .tag-nt { background: var(--terracotta-pale); color: var(--terracotta-dark); }
+  .tag-ot { background: var(--sage-pale); color: #4d6b46; }
+  .tag-topic { background: var(--gold-pale); color: #8a6a1f; }
+
+  /* ============ LESSON ============ */
+  .lesson-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 64px 32px 100px;
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 56px;
+  }
+  .lesson-aside {
+    position: sticky; top: 90px; align-self: start;
+  }
+  .progress-card {
+    background: var(--bg-2);
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 24px;
+  }
+  .progress-card h4 {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+  }
+  .progress-bar {
+    height: 6px; background: var(--bg-3); border-radius: 999px; overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 50%;
+    background: linear-gradient(90deg, var(--terracotta) 0%, var(--gold) 100%);
+    border-radius: 999px;
+  }
+  .progress-text {
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+  .progress-text strong { color: var(--terracotta); }
+
+  .lesson-nav h4 {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+  }
+  .lesson-nav ol {
+    list-style: none;
+  }
+  .lesson-nav li {
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-family: 'Newsreader', serif;
+    font-size: 14px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .lesson-nav li:hover { background: var(--bg-2); color: var(--ink); }
+  .lesson-nav li.done { color: var(--ink-faint); }
+  .lesson-nav li.active {
+    background: var(--terracotta-pale);
+    color: var(--terracotta-dark);
+    font-weight: 500;
+  }
+  .lesson-nav li::before {
+    content: '○';
+    color: var(--ink-faint);
+    font-size: 18px;
+  }
+  .lesson-nav li.done::before { content: '●'; color: var(--sage); }
+  .lesson-nav li.active::before { content: '◉'; color: var(--terracotta); }
+
+  .lesson-content { max-width: 720px; }
+  .lesson-breadcrumb {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    margin-bottom: 24px;
+  }
+  .lesson-breadcrumb a { color: var(--terracotta); text-decoration: none; }
+  .lesson-h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: clamp(40px, 5vw, 64px);
+    line-height: 1.05;
+    color: var(--ink);
+    letter-spacing: -0.015em;
+    margin-bottom: 16px;
+    font-variation-settings: "opsz" 144, "SOFT" 50;
+  }
+  .lesson-h1 em { font-style: italic; color: var(--terracotta); }
+
+  .lesson-meta-row {
+    display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+    margin-bottom: 40px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .lesson-meta-row .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 12px;
+    background: var(--bg-2);
+    border-radius: 999px;
+  }
+
+  .lesson-content > p {
+    margin-bottom: 18px;
+    font-size: 18px;
+    line-height: 1.75;
+    color: var(--ink);
+  }
+  .lesson-content h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 30px;
+    margin: 48px 0 16px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    font-variation-settings: "opsz" 100;
+  }
+  .lesson-content h2 .h2-num {
+    color: var(--terracotta);
+    font-style: italic;
+    margin-right: 12px;
+  }
+
+  .verse-card {
+    background: linear-gradient(135deg, var(--bg-2) 0%, var(--bg-3) 100%);
+    border-radius: 18px;
+    padding: 28px 32px;
+    margin: 32px 0;
+    position: relative;
+    border-left: 4px solid var(--gold);
+  }
+  .verse-card-text {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 22px;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+  .verse-card-cite {
+    margin-top: 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+  }
+
+  .question-card {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 24px;
+    margin: 28px 0;
+    transition: all 0.2s ease;
+  }
+  .question-card:hover { border-color: var(--terracotta-pale); box-shadow: var(--shadow); }
+  .question-card-head {
+    display: flex; align-items: flex-start; gap: 12px;
+    margin-bottom: 14px;
+  }
+  .question-num {
+    flex-shrink: 0;
+    width: 32px; height: 32px;
+    background: var(--terracotta);
+    color: var(--bg);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 15px;
+  }
+  .question-text {
+    font-size: 17px; color: var(--ink); line-height: 1.55; padding-top: 4px;
+  }
+  .question-textarea {
+    width: 100%; min-height: 100px;
+    padding: 14px 16px;
+    background: var(--bg-2);
+    border: none;
+    border-radius: 12px;
+    font-family: 'Newsreader', serif;
+    font-size: 16px;
+    color: var(--ink);
+    resize: vertical;
+    outline: none;
+    transition: background 0.2s;
+  }
+  .question-textarea:focus { background: var(--bg-3); }
+  .question-textarea::placeholder { color: var(--ink-faint); }
+  .question-saved {
+    margin-top: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--sage);
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* ============ LOGIN ============ */
+  .login-wrap {
+    min-height: calc(100vh - 56px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 60px 32px;
+  }
+  .login-card {
+    width: 100%; max-width: 920px;
+    background: var(--bg);
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .login-illust {
+    background: linear-gradient(135deg, #c66a4f 0%, #d4895a 100%);
+    padding: 48px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    color: var(--bg);
+    position: relative; overflow: hidden;
+  }
+  .login-illust::before {
+    content: '';
+    position: absolute; top: -100px; right: -100px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+  }
+  .login-illust-svg {
+    align-self: center;
+    width: 140px; height: 140px;
+    color: rgba(255,255,255,0.85);
+    margin: 24px 0;
+    position: relative; z-index: 1;
+  }
+  .login-illust-quote {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 24px;
+    line-height: 1.4;
+    position: relative; z-index: 1;
+    font-variation-settings: "SOFT" 100;
+  }
+  .login-illust-cite {
+    margin-top: 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.85;
+  }
+
+  .login-form {
+    padding: 56px 48px;
+  }
+  .login-form-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--terracotta);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+  }
+  .login-form-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 40px;
+    color: var(--ink);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    margin-bottom: 8px;
+  }
+  .login-form-title em { font-style: italic; color: var(--terracotta); }
+  .login-form-sub {
+    color: var(--ink-soft);
+    margin-bottom: 32px;
+  }
+
+  .field { margin-bottom: 18px; }
+  .field-label {
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .field-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: var(--bg-2);
+    border: 1px solid transparent;
+    border-radius: 12px;
+    font-family: 'Newsreader', serif;
+    font-size: 16px;
+    color: var(--ink);
+    outline: none;
+    transition: all 0.2s ease;
+  }
+  .field-input:focus {
+    background: var(--bg);
+    border-color: var(--terracotta);
+    box-shadow: 0 0 0 4px rgba(198,106,79,0.1);
+  }
+  .login-form-actions {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 28px;
+  }
+  .login-form-actions .link {
+    color: var(--terracotta);
+    font-size: 14px;
+    text-decoration: none;
+  }
+  .login-form-actions .link:hover { text-decoration: underline; }
+  .login-form-help {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+  .login-form-help a { color: var(--terracotta); }
+
+  /* ============ DESIGN SYSTEM ============ */
+  .system-wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 80px 32px 120px;
+  }
+  .ds-section { margin-bottom: 64px; }
+  .ds-section h3 {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--terracotta);
+    margin-bottom: 24px;
+  }
+  .ds-card {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: var(--shadow);
+  }
+  .type-row {
+    display: grid; grid-template-columns: 220px 1fr; gap: 32px;
+    padding: 20px 0; border-bottom: 1px solid var(--line);
+    align-items: baseline;
+  }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .type-meta strong { color: var(--ink); display: block; margin-bottom: 4px; font-weight: 500; }
+  .type-disp { font-family: 'Fraunces', serif; font-weight: 400; font-size: 56px; line-height: 1; font-variation-settings: "opsz" 144, "SOFT" 50; }
+  .type-disp em { font-style: italic; color: var(--terracotta); }
+  .type-h1 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 32px; }
+  .type-body { font-family: 'Newsreader', serif; font-size: 17px; line-height: 1.65; color: var(--ink); }
+  .type-mono { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.08em; }
+
+  .palette-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+  }
+  .palette-tile {
+    border-radius: 16px;
+    aspect-ratio: 1.2;
+    padding: 18px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+  }
+  .palette-tile strong { font-size: 13px; }
+
+  /* SVG illustrations */
+  svg .stroke-soft { stroke-opacity: 0.6; }
+
+  @media (max-width: 900px) {
+    .nav { padding: 12px 16px; }
+    .nav-links { display: none; }
+    .hero { padding: 60px 24px 80px; }
+    .hero-illust { display: none; }
+    .courses-wrap, .system-wrap { padding: 60px 24px 80px; }
+    .lesson-wrap { grid-template-columns: 1fr; gap: 32px; padding: 40px 24px 80px; }
+    .lesson-aside { position: static; }
+    .login-card { grid-template-columns: 1fr; max-width: 480px; }
+    .login-illust { padding: 32px; }
+    .login-form { padding: 40px 28px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="brand">
+    <span class="brand-icon">а</span>
+    <span>Очаг</span>
+  </a>
+  <div class="nav-links">
+    <a data-section="hero" class="active">Главная</a>
+    <a data-section="courses">Курсы</a>
+    <a data-section="lesson">Урок</a>
+    <a data-section="system">Стиль</a>
+  </div>
+  <a class="nav-cta" data-section="login">Войти</a>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="section active" id="hero">
+  <div class="hero">
+    <svg class="hero-illust" viewBox="0 0 240 240" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="color: var(--terracotta);">
+      <!-- Sun rays + open book illustration -->
+      <circle cx="120" cy="80" r="22" stroke-width="1.2" />
+      <g class="stroke-soft">
+        <line x1="120" y1="40" x2="120" y2="48" />
+        <line x1="120" y1="112" x2="120" y2="120" />
+        <line x1="80" y1="80" x2="88" y2="80" />
+        <line x1="152" y1="80" x2="160" y2="80" />
+        <line x1="92" y1="52" x2="98" y2="58" />
+        <line x1="142" y1="102" x2="148" y2="108" />
+        <line x1="148" y1="52" x2="142" y2="58" />
+        <line x1="98" y1="102" x2="92" y2="108" />
+      </g>
+      <!-- Book -->
+      <path d="M40 150 Q40 140 50 140 L115 140 Q120 140 120 145 L120 200 Q120 205 115 205 L50 205 Q40 205 40 195 Z" />
+      <path d="M120 145 Q120 140 125 140 L190 140 Q200 140 200 150 L200 195 Q200 205 190 205 L125 205 Q120 205 120 200 Z" />
+      <line x1="120" y1="145" x2="120" y2="200" />
+      <line x1="55" y1="158" x2="105" y2="158" stroke-width="0.8" />
+      <line x1="55" y1="170" x2="105" y2="170" stroke-width="0.8" />
+      <line x1="55" y1="182" x2="95" y2="182" stroke-width="0.8" />
+      <line x1="135" y1="158" x2="185" y2="158" stroke-width="0.8" />
+      <line x1="135" y1="170" x2="185" y2="170" stroke-width="0.8" />
+      <line x1="135" y1="182" x2="175" y2="182" stroke-width="0.8" />
+    </svg>
+
+    <div class="hero-tag">Изучение Библии · домашняя группа</div>
+
+    <h1 class="hero-title">
+      Откройте Писание <em class="highlight">вместе</em> — за чашкой <em>чая</em> и в живой беседе.
+    </h1>
+
+    <p class="hero-lead">
+      Современная платформа для домашних групп, воскресных школ и личного изучения. Двадцать один курс, продуманные вопросы, тихий уголок для ваших размышлений.
+    </p>
+
+    <div class="hero-actions">
+      <a class="btn btn-primary" data-section="courses">Посмотреть курсы →</a>
+      <a class="btn btn-ghost" data-section="login">Войти в кабинет</a>
+    </div>
+
+    <div class="hero-quote">
+      <div class="hero-quote-svg">«</div>
+      <p class="hero-quote-text">
+        Всё Писание богодухновенно и полезно для научения, для обличения, для исправления, для наставления в праведности.
+      </p>
+      <div class="hero-quote-cite">— 2 Тимофею 3:16</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COURSES ============ -->
+<section class="section" id="courses">
+  <div class="courses-wrap">
+    <header class="page-header">
+      <div class="page-eyebrow">— Каталог</div>
+      <h1 class="page-title">21 курс по <em>Библии</em></h1>
+      <p class="page-lead">От Бытия до Откровения. Каждый курс — сборник уроков с вопросами для размышления, удобной навигацией и местом для ваших ответов.</p>
+    </header>
+
+    <div class="filter-row">
+      <div class="chip active">Все курсы</div>
+      <div class="chip">Ветхий Завет</div>
+      <div class="chip">Новый Завет</div>
+      <div class="chip">Послания</div>
+      <div class="chip">Тематические</div>
+      <div class="chip">Для новых</div>
+    </div>
+
+    <div class="course-grid">
+      <a class="course-card">
+        <div class="course-card-illustration ci-1">
+          <svg width="80" height="80" viewBox="0 0 80 80" fill="none" stroke="#a4543e" stroke-width="1.5">
+            <path d="M40 15 L62 30 V55 L40 70 L18 55 V30 Z" />
+            <circle cx="40" cy="42" r="10" />
+            <line x1="40" y1="32" x2="40" y2="52" stroke-width="0.8"/>
+          </svg>
+        </div>
+        <div class="course-card-body">
+          <div class="course-card-meta">
+            <span class="course-card-tag tag-ot">Ветхий Завет</span>
+            <span class="dot"></span>
+            <span>15 уроков</span>
+          </div>
+          <h3 class="course-card-title">Бытие, часть первая</h3>
+          <p class="course-card-desc">От сотворения мира до Авраама. Истоки нашей веры и первые обетования.</p>
+        </div>
+      </a>
+
+      <a class="course-card">
+        <div class="course-card-illustration ci-2">
+          <svg width="80" height="80" viewBox="0 0 80 80" fill="none" stroke="#4d6b46" stroke-width="1.5">
+            <path d="M22 25 Q40 12 58 25 L58 55 Q40 68 22 55 Z" />
+            <circle cx="40" cy="40" r="6"/>
+            <line x1="22" y1="40" x2="58" y2="40" stroke-width="0.8" />
+          </svg>
+        </div>
+        <div class="course-card-body">
+          <div class="course-card-meta">
+            <span class="course-card-tag tag-ot">Ветхий Завет</span>
+            <span class="dot"></span>
+            <span>12 уроков</span>
+          </div>
+          <h3 class="course-card-title">Книга Даниила</h3>
+          <p class="course-card-desc">Верность Богу в чужой среде. Видения о Царствии Божьем и конце времён.</p>
+        </div>
+      </a>
+
+      <a class="course-card">
+        <div class="course-card-illustration ci-3">
+          <svg width="80" height="80" viewBox="0 0 80 80" fill="none" stroke="#8a6a1f" stroke-width="1.5">
+            <circle cx="40" cy="40" r="22" />
+            <path d="M28 35 Q40 28 52 35 M28 45 Q40 52 52 45" />
+          </svg>
+        </div>
+        <div class="course-card-body">
+          <div class="course-card-meta">
+            <span class="course-card-tag tag-nt">Новый Завет</span>
+            <span class="dot"></span>
+            <span>18 уроков</span>
+          </div>
+          <h3 class="course-card-title">Евангелие от Марка</h3>
+          <p class="course-card-desc">Самое раннее из Евангелий. Иисус — человек действия, идущий на крест.</p>
+        </div>
+      </a>
+
+      <a class="course-card">
+        <div class="course-card-illustration ci-4">
+          <svg width="80" height="80" viewBox="0 0 80 80" fill="none" stroke="#5d4a8a" stroke-width="1.5">
+            <path d="M40 18 Q22 35 22 50 Q22 62 40 65 Q58 62 58 50 Q58 35 40 18 Z" />
+            <line x1="40" y1="35" x2="40" y2="55" />
+            <line x1="33" y1="42" x2="47" y2="42" />
+          </svg>
+        </div>
+        <div class="course-card-body">
+          <div class="course-card-meta">
+            <span class="course-card-tag tag-nt">Новый Завет</span>
+            <span class="dot"></span>
+            <span>30 уроков</span>
+          </div>
+          <h3 class="course-card-title">Деяния апостолов</h3>
+          <p class="course-card-desc">Рождение Церкви, миссионерские путешествия Павла, Евангелие достигает Рима.</p>
+        </div>
+      </a>
+
+      <a class="course-card">
+        <div class="course-card-illustration ci-5">
+          <svg width="80" height="80" viewBox="0 0 80 80" fill="none" stroke="#3a6a7a" stroke-width="1.5">
+            <path d="M22 50 Q30 30 40 30 Q50 30 58 50" />
+            <path d="M28 50 L52 50" />
+            <circle cx="40" cy="22" r="6"/>
+          </svg>
+        </div>
+        <div class="course-card-body">
+          <div class="course-card-meta">
+            <span class="course-card-tag tag-nt">Новый Завет</span>
+            <span class="dot"></span>
+            <span>17 уроков</span>
+          </div>
+          <h3 class="course-card-title">1 Коринфянам</h3>
+          <p class="course-card-desc">Церковь в конфликтах. Как жить общиной святых в мире разделений.</p>
+        </div>
+      </a>
+
+      <a class="course-card">
+        <div class="course-card-illustration ci-6">
+          <svg width="80" height="80" viewBox="0 0 80 80" fill="none" stroke="#a4543e" stroke-width="1.5">
+            <path d="M40 16 L40 64 M22 28 L58 28 M22 44 L58 44 M22 58 L58 58" />
+          </svg>
+        </div>
+        <div class="course-card-body">
+          <div class="course-card-meta">
+            <span class="course-card-tag tag-topic">Тематический</span>
+            <span class="dot"></span>
+            <span>8 уроков</span>
+          </div>
+          <h3 class="course-card-title">Если будете молиться</h3>
+          <p class="course-card-desc">Практический курс о молитвенном служении и духовной войне.</p>
+        </div>
+      </a>
+    </div>
+
+    <p style="margin-top: 56px; text-align: center; color: var(--ink-soft); font-family: 'Fraunces', serif; font-style: italic; font-size: 22px;">
+      и ещё пятнадцать курсов в каталоге
+    </p>
+  </div>
+</section>
+
+<!-- ============ LESSON ============ -->
+<section class="section" id="lesson">
+  <div class="lesson-wrap">
+    <aside class="lesson-aside">
+      <div class="progress-card">
+        <h4>Ваш прогресс</h4>
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <div class="progress-text">Урок <strong>3 из 6</strong> · 50%</div>
+      </div>
+      <nav class="lesson-nav">
+        <h4>Послание Иакова</h4>
+        <ol>
+          <li class="done">Вступление и приветствие</li>
+          <li class="done">Испытания и искушения</li>
+          <li class="active">Сила малого языка</li>
+          <li>Истинная мудрость</li>
+          <li>Гордость и смирение</li>
+          <li>Терпение и молитва</li>
+        </ol>
+      </nav>
+    </aside>
+
+    <article class="lesson-content">
+      <div class="lesson-breadcrumb">
+        <a>Курсы</a> / <a>Иакова</a> / Урок 3
+      </div>
+
+      <h1 class="lesson-h1">Сила <em>малого</em> языка</h1>
+
+      <div class="lesson-meta-row">
+        <span class="pill">📖 Иакова 3:1–18</span>
+        <span class="pill">⏱ ~25 минут</span>
+        <span class="pill">💬 8 вопросов</span>
+      </div>
+
+      <p>Иаков пишет своим читателям предостережение, которое в нашем времени звучит ещё острее, чем в первом веке. Он напоминает: язык, эта малая часть тела, способна творить непропорционально великое — как доброе, так и злое.</p>
+
+      <p>В трёх образах апостол показывает власть языка над всей жизнью. Маленькая узда направляет коня. Малый руль управляет огромным кораблём. Крошечная искра пожирает целый лес. И всякий раз — чем меньше орудие, тем больше его влияние.</p>
+
+      <div class="verse-card">
+        <p class="verse-card-text">
+          А язык укротить никто из людей не может: это — неудержимое зло; он исполнен смертоносного яда.
+        </p>
+        <div class="verse-card-cite">— Иак. 3:8</div>
+      </div>
+
+      <h2><span class="h2-num">i.</span>Учитель и ответственность</h2>
+      <p>Иаков обращается прежде всего к тем, кто берёт на себя роль учителя в общине. «Не многие делайтесь учителями», — пишет он, и это не запрет, но призыв к трезвому осознанию: слово учителя имеет тяжёлый вес.</p>
+
+      <div class="question-card">
+        <div class="question-card-head">
+          <div class="question-num">1</div>
+          <div class="question-text">Подумайте: какие слова, сказанные вами на этой неделе, вы хотели бы взять обратно? Что в них было — раздражение, страх, гордыня?</div>
+        </div>
+        <textarea class="question-textarea" placeholder="Запишите ваш ответ здесь..."></textarea>
+        <div class="question-saved">● Сохранено только что</div>
+      </div>
+
+      <div class="question-card">
+        <div class="question-card-head">
+          <div class="question-num">2</div>
+          <div class="question-text">Где в вашей семье или общине сейчас «руль» поворачивается не туда? Что одно слово, сказанное вовремя, могло бы изменить?</div>
+        </div>
+        <textarea class="question-textarea" placeholder="Запишите ваш ответ здесь..."></textarea>
+      </div>
+
+      <h2><span class="h2-num">ii.</span>Мудрость, сходящая свыше</h2>
+      <p>Апостол не оставляет нас в отчаянии. После описания власти языка он приводит контраст: есть мудрость земная, душевная, бесовская — а есть мудрость свыше. Эта мудрость «чиста, потом мирна, скромна, послушлива, полна милосердия и добрых плодов».</p>
+
+      <p>Удивительно: первое качество — чистота. Слова, рождённые из чистого сердца, естественно становятся мирными. Не наоборот.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ============ LOGIN ============ -->
+<section class="section" id="login">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-illust">
+        <div style="position: relative; z-index: 1;">
+          <div style="font-family: 'DM Mono', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.85;">— Очаг</div>
+        </div>
+        <svg class="login-illust-svg" viewBox="0 0 140 140" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <!-- Door / open book -->
+          <path d="M30 30 L70 25 L70 115 L30 110 Z" />
+          <path d="M110 30 L70 25 L70 115 L110 110 Z" />
+          <line x1="40" y1="50" x2="62" y2="48" stroke-width="0.8"/>
+          <line x1="40" y1="60" x2="62" y2="58" stroke-width="0.8"/>
+          <line x1="40" y1="70" x2="62" y2="68" stroke-width="0.8"/>
+          <line x1="78" y1="48" x2="100" y2="50" stroke-width="0.8"/>
+          <line x1="78" y1="58" x2="100" y2="60" stroke-width="0.8"/>
+          <line x1="78" y1="68" x2="100" y2="70" stroke-width="0.8"/>
+          <!-- Sun above -->
+          <circle cx="70" cy="14" r="5"/>
+          <line x1="60" y1="14" x2="56" y2="14"/>
+          <line x1="80" y1="14" x2="84" y2="14"/>
+        </svg>
+        <div>
+          <p class="login-illust-quote">«Войду к нему, и буду вечерять с ним, и он со Мною»</p>
+          <div class="login-illust-cite">— Откр. 3:20</div>
+        </div>
+      </div>
+
+      <div class="login-form">
+        <div class="login-form-eyebrow">— Личный кабинет</div>
+        <h2 class="login-form-title">С возвращением, <em>друг</em></h2>
+        <p class="login-form-sub">Войдите, чтобы продолжить чтение и сохранить новые ответы.</p>
+
+        <div class="field">
+          <label class="field-label">Электронная почта</label>
+          <input class="field-input" type="email" placeholder="ivan@example.com">
+        </div>
+        <div class="field">
+          <label class="field-label">Пароль</label>
+          <input class="field-input" type="password" placeholder="••••••••">
+        </div>
+
+        <div class="login-form-actions">
+          <button class="btn btn-primary">Войти →</button>
+          <a href="#" class="link">Забыли пароль?</a>
+        </div>
+
+        <p class="login-form-help">
+          Ещё нет учётной записи? — <a href="#">Подайте заявку</a>, и пастор вашей группы откроет вам доступ.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DESIGN SYSTEM ============ -->
+<section class="section" id="system">
+  <div class="system-wrap">
+    <header class="page-header">
+      <div class="page-eyebrow">— Дизайн-система</div>
+      <h1 class="page-title">Тёплая <em>человечная</em> система</h1>
+      <p class="page-lead">Шрифты, цвета и компоненты, формирующие интерфейс. Всё построено вокруг идеи внимательного, неторопливого чтения.</p>
+    </header>
+
+    <div class="ds-section">
+      <h3>Типографика</h3>
+      <div class="ds-card">
+        <div class="type-row">
+          <div class="type-meta"><strong>Display</strong>Fraunces · 56–96 px</div>
+          <div class="type-disp">Слово <em>стало</em> плотью</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><strong>H1</strong>Fraunces 500 · 32 px</div>
+          <div class="type-h1">Восьмая глава Послания к Римлянам</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><strong>Body</strong>Newsreader · 17 px</div>
+          <div class="type-body">«Не любите мира, ни того, что в мире: кто любит мир, в том нет любви Отчей».</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><strong>Mono</strong>DM Mono · 13 px</div>
+          <div class="type-mono">— ВЕТХИЙ ЗАВЕТ · 12 УРОКОВ · 240 МИНУТ</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-section">
+      <h3>Цветовая палитра</h3>
+      <div class="palette-grid">
+        <div class="palette-tile" style="background: var(--bg); color: var(--ink);"><strong>Кремовый</strong><span>#faf6ef</span></div>
+        <div class="palette-tile" style="background: var(--bg-2); color: var(--ink);"><strong>Кремовый 2</strong><span>#f1e9d8</span></div>
+        <div class="palette-tile" style="background: var(--ink); color: var(--bg);"><strong>Тёмный</strong><span>#2a221a</span></div>
+        <div class="palette-tile" style="background: var(--terracotta); color: var(--bg);"><strong>Терракота</strong><span>#c66a4f</span></div>
+        <div class="palette-tile" style="background: var(--sage); color: var(--bg);"><strong>Шалфей</strong><span>#6b8e63</span></div>
+        <div class="palette-tile" style="background: var(--gold); color: var(--ink);"><strong>Золото</strong><span>#c89a3a</span></div>
+      </div>
+    </div>
+
+    <div class="ds-section">
+      <h3>Кнопки и компоненты</h3>
+      <div class="ds-card" style="display: flex; flex-direction: column; gap: 24px;">
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+          <button class="btn btn-primary">Войти в кабинет →</button>
+          <button class="btn btn-ghost">Посмотреть курсы</button>
+          <span class="course-card-tag tag-nt">Новый Завет</span>
+          <span class="course-card-tag tag-ot">Ветхий Завет</span>
+          <span class="course-card-tag tag-topic">Тематический</span>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <div class="chip active">Все курсы</div>
+          <div class="chip">Ветхий Завет</div>
+          <div class="chip">Послания</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const links = document.querySelectorAll('[data-section]');
+  const sections = document.querySelectorAll('.section');
+  links.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const target = link.dataset.section;
+      if (!target) return;
+      sections.forEach(s => s.classList.toggle('active', s.id === target));
+      document.querySelectorAll('.nav-links a').forEach(a => {
+        a.classList.toggle('active', a.dataset.section === target);
+      });
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    });
+  });
+</script>
+</body>
+</html>

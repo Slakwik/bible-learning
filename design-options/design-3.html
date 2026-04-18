@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Завет — Дизайн 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0d18;
+    --bg-2: #11162a;
+    --bg-3: #1a2138;
+    --bg-elev: #1d2647;
+    --line: rgba(255, 255, 255, 0.08);
+    --line-strong: rgba(255, 255, 255, 0.16);
+    --text: #f3eee0;
+    --text-soft: #9aa1b6;
+    --text-faint: #5a6178;
+    --amber: #f4c430;
+    --amber-dim: #b89324;
+    --amber-glow: rgba(244, 196, 48, 0.25);
+    --crimson: #e54a6b;
+    --mint: #6ee7b7;
+    --violet: #a78bfa;
+    --blue: #60a5fa;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Geist', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Atmospheric backdrop with grain */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: -2;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(244,196,48,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 100% 100%, rgba(229,74,107,0.04) 0%, transparent 60%);
+  }
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: -1;
+    opacity: 0.4;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' /%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  ::selection { background: var(--amber); color: var(--bg); }
+
+  a { color: inherit; text-decoration: none; }
+
+  /* ============ Top Nav ============ */
+  .nav {
+    position: sticky; top: 16px; z-index: 50;
+    margin: 16px 24px 0;
+    padding: 12px 16px 12px 22px;
+    background: rgba(17, 22, 42, 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    display: flex; align-items: center; justify-content: space-between;
+    max-width: 1280px; margin-left: auto; margin-right: auto;
+  }
+  .nav-brand {
+    display: flex; align-items: center; gap: 12px;
+    font-family: 'Geist', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: -0.01em;
+  }
+  .nav-brand-mark {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--amber) 0%, var(--crimson) 100%);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--bg);
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 18px;
+    box-shadow: 0 0 24px var(--amber-glow), inset 0 1px 0 rgba(255,255,255,0.3);
+  }
+  .nav-links {
+    display: flex; gap: 4px;
+    background: var(--bg-3);
+    padding: 4px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+  }
+  .nav-links a {
+    padding: 7px 16px;
+    border-radius: 999px;
+    font-size: 14px;
+    color: var(--text-soft);
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a.active {
+    background: var(--bg);
+    color: var(--text);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4), inset 0 0 0 1px var(--line-strong);
+  }
+  .nav-cta {
+    padding: 8px 18px;
+    background: var(--text);
+    color: var(--bg);
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.18s ease;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+  }
+  .nav-cta:hover {
+    background: var(--amber);
+    box-shadow: 0 0 32px var(--amber-glow);
+  }
+
+  /* ============ Sections ============ */
+  .section { display: none; }
+  .section.active { display: block; animation: enter 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  @keyframes enter {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* ============ HERO ============ */
+  .hero {
+    max-width: 1380px;
+    margin: 0 auto;
+    padding: 80px 32px 100px;
+    position: relative;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 6px 14px 6px 8px;
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-family: 'Geist Mono', monospace;
+    font-size: 12px;
+    color: var(--text-soft);
+    margin-bottom: 40px;
+  }
+  .hero-eyebrow .dot {
+    width: 8px; height: 8px;
+    background: var(--mint);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--mint);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 50% { opacity: 0.4; } }
+  .hero-eyebrow span { color: var(--text); }
+
+  .hero-title {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-size: clamp(64px, 12vw, 180px);
+    line-height: 0.88;
+    letter-spacing: -0.04em;
+    margin-bottom: 36px;
+    color: var(--text);
+  }
+  .hero-title em {
+    font-style: italic;
+    background: linear-gradient(120deg, var(--amber) 0%, #ffd967 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+  }
+  .hero-title .symbol {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: var(--crimson);
+  }
+
+  .hero-bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    margin-top: 80px;
+    align-items: end;
+  }
+
+  .hero-lead {
+    font-size: 22px;
+    line-height: 1.5;
+    color: var(--text-soft);
+    max-width: 540px;
+    font-weight: 300;
+  }
+  .hero-lead em {
+    color: var(--amber);
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .hero-actions { display: flex; gap: 12px; align-items: center; margin-top: 32px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 13px 22px;
+    border-radius: 999px;
+    font-family: 'Geist', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    border: none;
+    text-decoration: none;
+  }
+  .btn-amber {
+    background: var(--amber);
+    color: var(--bg);
+    box-shadow: 0 0 0 1px rgba(244,196,48,0.5), 0 8px 32px rgba(244,196,48,0.2);
+  }
+  .btn-amber:hover {
+    background: #ffd967;
+    box-shadow: 0 0 0 1px var(--amber), 0 12px 40px rgba(244,196,48,0.35);
+    transform: translateY(-1px);
+  }
+  .btn-ghost {
+    color: var(--text);
+    background: transparent;
+    border: 1px solid var(--line-strong);
+  }
+  .btn-ghost:hover { background: var(--bg-3); border-color: var(--text-soft); }
+
+  /* Hero stats grid */
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .hero-stat {
+    background: var(--bg-2);
+    padding: 24px 20px;
+    transition: background 0.2s ease;
+  }
+  .hero-stat:hover { background: var(--bg-3); }
+  .hero-stat-num {
+    font-family: 'Instrument Serif', serif;
+    font-size: 56px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .hero-stat-num em { color: var(--amber); font-style: italic; }
+  .hero-stat-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    letter-spacing: 0.05em;
+  }
+
+  /* Floating verse card */
+  .hero-verse {
+    margin-top: 100px;
+    padding: 40px;
+    background: linear-gradient(135deg, var(--bg-2) 0%, var(--bg-3) 100%);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-verse::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at top right, var(--amber-glow) 0%, transparent 50%);
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  .hero-verse-text {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 28px;
+    line-height: 1.4;
+    color: var(--text);
+    max-width: 800px;
+    position: relative;
+  }
+  .hero-verse-cite {
+    margin-top: 18px;
+    font-family: 'Geist Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    letter-spacing: 0.05em;
+    position: relative;
+  }
+
+  /* ============ COURSES ============ */
+  .courses-wrap {
+    max-width: 1380px;
+    margin: 0 auto;
+    padding: 80px 32px 100px;
+  }
+
+  .page-meta {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Geist Mono', monospace;
+    font-size: 12px;
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 16px;
+  }
+  .page-meta::before {
+    content: ''; width: 24px; height: 1px; background: var(--amber);
+  }
+
+  .page-h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(48px, 8vw, 96px);
+    font-weight: 400;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 24px;
+    color: var(--text);
+  }
+  .page-h1 em {
+    font-style: italic;
+    background: linear-gradient(120deg, var(--amber) 0%, var(--crimson) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .page-lead {
+    font-size: 19px;
+    color: var(--text-soft);
+    max-width: 640px;
+    margin-bottom: 56px;
+  }
+
+  /* Bento grid for courses */
+  .bento {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: minmax(170px, auto);
+    gap: 16px;
+  }
+  .b-card {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 26px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .b-card::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(244,196,48,0.06) 0%, transparent 30%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .b-card:hover {
+    border-color: var(--line-strong);
+    transform: translateY(-2px);
+  }
+  .b-card:hover::after { opacity: 1; }
+
+  .b-large { grid-column: span 6; grid-row: span 2; }
+  .b-tall { grid-column: span 3; grid-row: span 2; }
+  .b-wide { grid-column: span 6; }
+  .b-med  { grid-column: span 3; }
+
+  .b-card-num {
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+  }
+
+  .b-card-title {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 14px;
+  }
+  .b-card-title em { font-style: italic; color: var(--amber); }
+
+  .b-large .b-card-title { font-size: 56px; }
+
+  .b-card-desc {
+    color: var(--text-soft);
+    font-size: 15px;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+
+  .b-card-tags {
+    display: flex; gap: 8px; align-items: center;
+    margin-top: auto;
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    letter-spacing: 0.05em;
+  }
+  .b-card-tags .tag {
+    padding: 4px 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+  }
+  .b-card-tags .tag.amber { color: var(--amber); border-color: rgba(244,196,48,0.3); }
+  .b-card-tags .tag.mint  { color: var(--mint); border-color: rgba(110,231,183,0.3); }
+  .b-card-tags .tag.violet { color: var(--violet); border-color: rgba(167,139,250,0.3); }
+  .b-card-tags .tag.crimson { color: var(--crimson); border-color: rgba(229,74,107,0.3); }
+
+  .b-card-arrow {
+    position: absolute; top: 24px; right: 24px;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--line-strong);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-soft);
+    transition: all 0.2s ease;
+  }
+  .b-card:hover .b-card-arrow {
+    background: var(--amber);
+    color: var(--bg);
+    border-color: var(--amber);
+    transform: translate(2px, -2px);
+  }
+
+  /* Featured large card */
+  .b-feature {
+    background: linear-gradient(135deg, var(--bg-elev) 0%, var(--bg-2) 100%);
+    border-color: var(--line-strong);
+    position: relative;
+  }
+  .b-feature::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at top left, rgba(244,196,48,0.15) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .b-feature .b-card-num { color: var(--amber); }
+
+  /* Number-only card */
+  .b-stat-card {
+    background: linear-gradient(135deg, var(--bg-elev) 0%, var(--bg-3) 100%);
+    border: 1px solid var(--line-strong);
+    text-align: left;
+  }
+  .b-stat-num {
+    font-family: 'Instrument Serif', serif;
+    font-size: 120px;
+    font-style: italic;
+    line-height: 0.9;
+    background: linear-gradient(135deg, var(--amber) 0%, var(--crimson) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+    letter-spacing: -0.04em;
+  }
+
+  /* ============ LESSON ============ */
+  .lesson-wrap {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 64px 32px 100px;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 48px;
+  }
+  .lesson-aside {
+    position: sticky; top: 100px; align-self: start;
+  }
+  .aside-card {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .aside-eyebrow {
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+  }
+  .aside-progress {
+    height: 4px;
+    background: var(--bg-3);
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 14px 0 8px;
+  }
+  .aside-progress-fill {
+    height: 100%;
+    width: 50%;
+    background: linear-gradient(90deg, var(--amber) 0%, var(--crimson) 100%);
+    border-radius: 999px;
+  }
+  .aside-progress-text {
+    font-family: 'Geist Mono', monospace;
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+  .aside-progress-text strong { color: var(--amber); }
+
+  .aside-list { list-style: none; }
+  .aside-list li {
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--text-soft);
+    cursor: pointer;
+    display: flex; align-items: center; gap: 10px;
+    transition: all 0.15s;
+  }
+  .aside-list li:hover { background: var(--bg-3); color: var(--text); }
+  .aside-list li.done { color: var(--text-faint); }
+  .aside-list li.active {
+    background: var(--bg-elev);
+    color: var(--text);
+    border: 1px solid var(--line-strong);
+  }
+  .aside-list li::before {
+    content: '○'; color: var(--text-faint); font-size: 14px;
+  }
+  .aside-list li.done::before { content: '✓'; color: var(--mint); }
+  .aside-list li.active::before { content: '◉'; color: var(--amber); }
+
+  .lesson-main { max-width: 760px; }
+  .lesson-crumbs {
+    font-family: 'Geist Mono', monospace;
+    font-size: 12px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 28px;
+  }
+  .lesson-crumbs a { color: var(--amber); }
+
+  .lesson-title-big {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(48px, 6vw, 80px);
+    font-weight: 400;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+  .lesson-title-big em { font-style: italic; color: var(--amber); }
+
+  .lesson-meta-bar {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    padding: 12px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 40px;
+    font-family: 'Geist Mono', monospace;
+    font-size: 12px;
+    color: var(--text-soft);
+    letter-spacing: 0.02em;
+  }
+  .lesson-meta-bar .item {
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .lesson-meta-bar .item::before { content: '·'; color: var(--text-faint); margin-right: 6px; }
+  .lesson-meta-bar .item:first-child::before { display: none; }
+  .lesson-meta-bar .item strong { color: var(--text); font-weight: 500; }
+
+  .prose { color: var(--text); }
+  .prose p {
+    font-size: 18px;
+    line-height: 1.7;
+    margin-bottom: 18px;
+    color: var(--text-soft);
+  }
+  .prose p strong { color: var(--text); font-weight: 500; }
+
+  .prose h2 {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-size: 38px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 48px 0 16px;
+    color: var(--text);
+  }
+  .prose h2 .num {
+    color: var(--amber); font-style: italic;
+    margin-right: 14px;
+  }
+
+  .prose blockquote {
+    margin: 32px 0;
+    padding: 28px 32px;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--amber);
+    border-radius: 12px;
+    position: relative;
+  }
+  .prose blockquote p {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 24px;
+    line-height: 1.4;
+    color: var(--text);
+    margin: 0;
+  }
+  .prose blockquote cite {
+    display: block;
+    margin-top: 14px;
+    font-family: 'Geist Mono', monospace;
+    font-style: normal;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    letter-spacing: 0.05em;
+  }
+
+  .q-block {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 24px;
+    margin: 28px 0;
+    transition: all 0.2s;
+  }
+  .q-block:focus-within { border-color: var(--amber); box-shadow: 0 0 0 4px rgba(244,196,48,0.1); }
+  .q-block-head {
+    display: flex; align-items: flex-start; gap: 14px;
+    margin-bottom: 14px;
+  }
+  .q-num {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--amber) 0%, var(--crimson) 100%);
+    color: var(--bg);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Geist Mono', monospace;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .q-text {
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--text);
+    padding-top: 4px;
+  }
+  .q-input {
+    width: 100%;
+    min-height: 100px;
+    padding: 14px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-family: 'Geist', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    outline: none;
+    resize: vertical;
+    transition: border-color 0.2s;
+  }
+  .q-input::placeholder { color: var(--text-faint); }
+  .q-input:focus { border-color: var(--amber); }
+
+  /* ============ LOGIN ============ */
+  .login-wrap {
+    min-height: calc(100vh - 80px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 60px 32px;
+  }
+  .login-stage {
+    width: 100%; max-width: 480px;
+    position: relative;
+  }
+  .login-stage::before {
+    content: '';
+    position: absolute; inset: -80px;
+    background: radial-gradient(ellipse at center, rgba(244,196,48,0.08) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: -1;
+  }
+  .login-card {
+    background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg) 100%);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 48px 40px;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px var(--line) inset;
+    position: relative;
+  }
+  .login-mark {
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, var(--amber) 0%, var(--crimson) 100%);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--bg);
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 32px;
+    margin-bottom: 28px;
+    box-shadow: 0 0 32px var(--amber-glow), inset 0 1px 0 rgba(255,255,255,0.3);
+  }
+  .login-title {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-size: 40px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .login-title em { font-style: italic; color: var(--amber); }
+  .login-sub {
+    color: var(--text-soft);
+    font-size: 15px;
+    margin-bottom: 32px;
+  }
+  .field { margin-bottom: 16px; }
+  .field-label {
+    display: block;
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+  .field-input {
+    width: 100%;
+    padding: 12px 14px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-family: 'Geist', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    outline: none;
+    transition: all 0.18s ease;
+  }
+  .field-input::placeholder { color: var(--text-faint); }
+  .field-input:focus {
+    border-color: var(--amber);
+    box-shadow: 0 0 0 4px rgba(244,196,48,0.1);
+  }
+
+  .login-actions { margin-top: 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .login-help {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+    color: var(--text-soft);
+    text-align: center;
+  }
+  .login-help a { color: var(--amber); }
+  .login-link {
+    color: var(--text-soft); font-size: 13px;
+  }
+  .login-link:hover { color: var(--amber); }
+
+  /* ============ DESIGN SYSTEM ============ */
+  .system-wrap {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 64px 32px 100px;
+  }
+  .ds-section { margin-bottom: 60px; }
+  .ds-h {
+    display: flex; align-items: baseline; gap: 12px;
+    font-family: 'Geist Mono', monospace;
+    font-size: 12px;
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 20px;
+  }
+  .ds-h-num { color: var(--text-faint); }
+
+  .ds-card {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 32px;
+  }
+
+  .ds-type-row {
+    display: grid; grid-template-columns: 200px 1fr; gap: 32px;
+    padding: 24px 0; border-bottom: 1px solid var(--line);
+    align-items: baseline;
+  }
+  .ds-type-row:last-child { border-bottom: none; }
+  .ds-type-meta {
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .ds-type-meta strong { display: block; color: var(--text); margin-bottom: 4px; font-weight: 500; }
+
+  .ds-disp { font-family: 'Instrument Serif', serif; font-size: 64px; line-height: 0.9; letter-spacing: -0.03em; }
+  .ds-disp em { font-style: italic; background: linear-gradient(120deg, var(--amber), var(--crimson)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .ds-h1 { font-family: 'Instrument Serif', serif; font-size: 36px; }
+  .ds-body { font-size: 16px; color: var(--text-soft); }
+  .ds-mono { font-family: 'Geist Mono', monospace; font-size: 13px; color: var(--text-soft); }
+
+  .palette-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+  }
+  .palette-tile {
+    aspect-ratio: 1.3;
+    border-radius: 14px;
+    padding: 16px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    border: 1px solid var(--line);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .palette-tile strong { font-size: 13px; font-family: 'Geist', sans-serif; text-transform: none; letter-spacing: 0; }
+
+  @media (max-width: 1024px) {
+    .b-large { grid-column: span 12; grid-row: span 2; }
+    .b-tall  { grid-column: span 6; grid-row: span 2; }
+    .b-wide  { grid-column: span 12; }
+    .b-med   { grid-column: span 6; }
+    .lesson-wrap { grid-template-columns: 1fr; gap: 32px; }
+    .lesson-aside { position: static; }
+  }
+  @media (max-width: 700px) {
+    .nav { padding: 10px 12px; margin: 12px; }
+    .nav-links { display: none; }
+    .hero { padding: 60px 20px 80px; }
+    .hero-bottom { grid-template-columns: 1fr; gap: 32px; }
+    .hero-stats { grid-template-columns: 1fr; }
+    .courses-wrap, .lesson-wrap, .system-wrap { padding: 60px 20px 80px; }
+    .b-tall, .b-med { grid-column: span 12; }
+    .ds-type-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand">
+    <span class="nav-brand-mark">З</span>
+    <span>Завет</span>
+    <span style="color: var(--text-faint); font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 400; margin-left: 8px;">v.4</span>
+  </a>
+  <div class="nav-links">
+    <a data-section="hero" class="active">Главная</a>
+    <a data-section="courses">Курсы</a>
+    <a data-section="lesson">Урок</a>
+    <a data-section="system">Система</a>
+  </div>
+  <button class="nav-cta" data-section="login">Войти →</button>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="section active" id="hero">
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span class="dot"></span>
+      <span>Изучение Библии</span>
+      <span style="color: var(--text-faint);">·</span>
+      v.4 · 21 курс активен
+    </div>
+
+    <h1 class="hero-title">
+      Священное<br>
+      Писание<br>
+      <em>каждый день</em><span class="symbol">.</span>
+    </h1>
+
+    <div class="hero-bottom">
+      <div>
+        <p class="hero-lead">
+          Платформа нового поколения для изучения Библии в группе и в одиночку. <em>Двести двадцать семь</em> уроков, продуманные вопросы, удобный кабинет — всё, чтобы Слово стало частью повседневной жизни.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-amber" data-section="courses">Открыть каталог →</a>
+          <a class="btn btn-ghost" data-section="login">Войти в кабинет</a>
+        </div>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-num"><em>21</em></div>
+          <div class="hero-stat-label">Курс активен</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">227</div>
+          <div class="hero-stat-label">Уроков всего</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num"><em>3k+</em></div>
+          <div class="hero-stat-label">Вопросов</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-verse">
+      <p class="hero-verse-text">
+        «Всё Писание богодухновенно и полезно для научения, для обличения, для исправления, для наставления в праведности».
+      </p>
+      <div class="hero-verse-cite">— 2 Тимофею 3:16</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COURSES ============ -->
+<section class="section" id="courses">
+  <div class="courses-wrap">
+    <div class="page-meta">— Каталог 2026.04</div>
+    <h1 class="page-h1">Двадцать один <em>курс</em>.</h1>
+    <p class="page-lead">От Бытия до Откровения, плюс тематические курсы. Каждый — полная программа с вопросами для размышления и личным архивом ваших ответов.</p>
+
+    <div class="bento">
+      <a class="b-card b-large b-feature" style="grid-column: span 6; grid-row: span 2;">
+        <div>
+          <div class="b-card-num">N° 03 · НОВЫЙ КУРС</div>
+          <h3 class="b-card-title">Деяния <em>апостолов</em></h3>
+          <p class="b-card-desc">Самый масштабный курс на платформе: 30 уроков о рождении Церкви, миссионерских путешествиях Павла и Евангелии, достигшем Рима.</p>
+        </div>
+        <div class="b-card-tags">
+          <span class="tag amber">Новый Завет</span>
+          <span class="tag">30 уроков</span>
+          <span class="tag">~12 часов</span>
+        </div>
+        <div class="b-card-arrow">→</div>
+      </a>
+
+      <a class="b-card b-tall b-stat-card">
+        <div>
+          <div class="b-card-num">Запущено</div>
+          <div class="b-stat-num">21</div>
+          <div style="color: var(--text-soft); font-size: 14px; line-height: 1.5;">Курсов в каталоге.<br>От Ветхого до Нового Завета.</div>
+        </div>
+        <div class="b-card-tags">
+          <span class="tag amber">Активно</span>
+        </div>
+      </a>
+
+      <a class="b-card b-tall">
+        <div>
+          <div class="b-card-num">N° 04</div>
+          <h3 class="b-card-title">Бытие<br>ч. <em>i</em></h3>
+          <p class="b-card-desc">От сотворения мира до Авраама.</p>
+        </div>
+        <div class="b-card-tags">
+          <span class="tag mint">Ветхий</span>
+          <span class="tag">15</span>
+        </div>
+        <div class="b-card-arrow">→</div>
+      </a>
+
+      <a class="b-card b-med">
+        <div>
+          <div class="b-card-num">N° 05</div>
+          <h3 class="b-card-title">Даниил</h3>
+        </div>
+        <div class="b-card-tags">
+          <span class="tag mint">Ветхий</span>
+          <span class="tag">12</span>
+        </div>
+        <div class="b-card-arrow">→</div>
+      </a>
+
+      <a class="b-card b-med">
+        <div>
+          <div class="b-card-num">N° 06</div>
+          <h3 class="b-card-title">Иисус<br>Навин</h3>
+        </div>
+        <div class="b-card-tags">
+          <span class="tag mint">Ветхий</span>
+          <span class="tag">6</span>
+        </div>
+        <div class="b-card-arrow">→</div>
+      </a>
+
+      <a class="b-card b-med">
+        <div>
+          <div class="b-card-num">N° 07</div>
+          <h3 class="b-card-title">Марка</h3>
+        </div>
+        <div class="b-card-tags">
+          <span class="tag amber">Новый</span>
+          <span class="tag">18</span>
+        </div>
+        <div class="b-card-arrow">→</div>
+      </a>
+
+      <a class="b-card b-med">
+        <div>
+          <div class="b-card-num">N° 08</div>
+          <h3 class="b-card-title">1 Кор.</h3>
+        </div>
+        <div class="b-card-tags">
+          <span class="tag amber">Новый</span>
+          <span class="tag">17</span>
+        </div>
+        <div class="b-card-arrow">→</div>
+      </a>
+
+      <a class="b-card b-wide">
+        <div>
+          <div class="b-card-num">N° 09 · ТЕМАТИЧЕСКИЙ</div>
+          <h3 class="b-card-title">Если будете <em>молиться</em></h3>
+          <p class="b-card-desc">Практический курс о молитвенном служении и духовной войне. Восемь уроков для одного человека или малой группы.</p>
+        </div>
+        <div class="b-card-tags">
+          <span class="tag violet">Тема</span>
+          <span class="tag">8 уроков</span>
+        </div>
+        <div class="b-card-arrow">→</div>
+      </a>
+
+      <a class="b-card b-wide">
+        <div>
+          <div class="b-card-num">N° 10 · ВВЕДЕНИЕ</div>
+          <h3 class="b-card-title">Библия: <em>удивительная</em> книга</h3>
+          <p class="b-card-desc">Обзор Писания для тех, кто только начинает читать. Семь частей о структуре, темах и центральном Сюжете.</p>
+        </div>
+        <div class="b-card-tags">
+          <span class="tag crimson">Для новых</span>
+          <span class="tag">7 частей</span>
+        </div>
+        <div class="b-card-arrow">→</div>
+      </a>
+    </div>
+
+    <p style="margin-top: 48px; text-align: center; color: var(--text-soft); font-family: 'Geist Mono', monospace; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">
+      и ещё двенадцать курсов в каталоге →
+    </p>
+  </div>
+</section>
+
+<!-- ============ LESSON ============ -->
+<section class="section" id="lesson">
+  <div class="lesson-wrap">
+    <aside class="lesson-aside">
+      <div class="aside-card">
+        <div class="aside-eyebrow">Ваш прогресс</div>
+        <div class="aside-progress"><div class="aside-progress-fill"></div></div>
+        <div class="aside-progress-text">Урок <strong>3 / 6</strong> · 50%</div>
+      </div>
+
+      <div class="aside-card">
+        <div class="aside-eyebrow">Послание Иакова</div>
+        <ol class="aside-list">
+          <li class="done">Вступление</li>
+          <li class="done">Испытания</li>
+          <li class="active">Сила малого языка</li>
+          <li>Истинная мудрость</li>
+          <li>Гордость и смирение</li>
+          <li>Терпение и молитва</li>
+        </ol>
+      </div>
+    </aside>
+
+    <article class="lesson-main">
+      <div class="lesson-crumbs">
+        <a>Курсы</a> <span style="color: var(--text-faint);">/</span> <a>Иакова</a> <span style="color: var(--text-faint);">/</span> Урок 03
+      </div>
+
+      <h1 class="lesson-title-big">Сила <em>малого</em> языка</h1>
+
+      <div class="lesson-meta-bar">
+        <span class="item"><strong>📖 Иак. 3:1–18</strong></span>
+        <span class="item">⏱ 25 минут</span>
+        <span class="item">💬 8 вопросов</span>
+        <span class="item" style="margin-left: auto; color: var(--mint);">● Сохранено</span>
+      </div>
+
+      <div class="prose">
+        <p>Иаков пишет своим читателям предостережение, которое в нашем времени звучит ещё острее, чем в первом веке. Он напоминает: <strong>язык, эта малая часть тела</strong>, способна творить непропорционально великое — как доброе, так и злое.</p>
+
+        <p>В трёх образах апостол показывает власть языка над всей жизнью. Маленькая узда направляет коня. Малый руль управляет огромным кораблём. Крошечная искра пожирает целый лес.</p>
+
+        <blockquote>
+          <p>А язык укротить никто из людей не может: это — неудержимое зло; он исполнен смертоносного яда.</p>
+          <cite>— Иак. 3:8</cite>
+        </blockquote>
+
+        <h2><span class="num">i.</span>Учитель и ответственность</h2>
+        <p>Иаков обращается прежде всего к тем, кто берёт на себя роль учителя в общине. «Не многие делайтесь учителями», — пишет он, и это не запрет, но призыв к трезвому осознанию: слово учителя имеет тяжёлый вес, и говорящий будет отвечать строже.</p>
+
+        <div class="q-block">
+          <div class="q-block-head">
+            <div class="q-num">01</div>
+            <div class="q-text">Подумайте: какие слова, сказанные вами на этой неделе, вы хотели бы взять обратно? Что в них было — раздражение, страх, гордыня?</div>
+          </div>
+          <textarea class="q-input" placeholder="Запишите свой ответ..."></textarea>
+        </div>
+
+        <div class="q-block">
+          <div class="q-block-head">
+            <div class="q-num">02</div>
+            <div class="q-text">Где в вашей семье или общине сейчас «руль» поворачивается не туда? Что одно слово, сказанное вовремя, могло бы изменить?</div>
+          </div>
+          <textarea class="q-input" placeholder="Запишите свой ответ..."></textarea>
+        </div>
+
+        <h2><span class="num">ii.</span>Мудрость, сходящая свыше</h2>
+        <p>Апостол не оставляет нас в отчаянии. После описания власти языка он приводит контраст: есть мудрость земная, душевная, бесовская — а есть мудрость свыше. Эта мудрость «чиста, потом мирна, скромна, послушлива, полна милосердия и добрых плодов».</p>
+
+        <p>Удивительно: первое качество — <strong>чистота</strong>. Слова, рождённые из чистого сердца, естественно становятся мирными. Не наоборот.</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ============ LOGIN ============ -->
+<section class="section" id="login">
+  <div class="login-wrap">
+    <div class="login-stage">
+      <div class="login-card">
+        <div class="login-mark">З</div>
+        <h2 class="login-title">С возвращением, <em>читатель</em>.</h2>
+        <p class="login-sub">Войдите в кабинет, чтобы продолжить чтение и сохранить ответы.</p>
+
+        <div class="field">
+          <label class="field-label">Электронная почта</label>
+          <input class="field-input" type="email" placeholder="ivan@example.com">
+        </div>
+        <div class="field">
+          <label class="field-label">Пароль</label>
+          <input class="field-input" type="password" placeholder="••••••••">
+        </div>
+
+        <div class="login-actions">
+          <button class="btn btn-amber" style="width: 100%;">Войти →</button>
+        </div>
+
+        <div style="margin-top: 16px; text-align: center;">
+          <a class="login-link">Забыли пароль?</a>
+        </div>
+
+        <div class="login-help">
+          Ещё нет учётной записи? <a href="#">Подайте заявку</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DESIGN SYSTEM ============ -->
+<section class="section" id="system">
+  <div class="system-wrap">
+    <div class="page-meta">— Дизайн-система v.4</div>
+    <h1 class="page-h1">Смелая <em>система</em>.</h1>
+    <p class="page-lead">Тёмная тема, крупная типографика, сдержанные акценты. Дизайн черпает вдохновение в современных продуктах вроде Linear и Vercel — чёткость, плотность, скорость.</p>
+
+    <div class="ds-section">
+      <div class="ds-h"><span class="ds-h-num">01</span> Типографика</div>
+      <div class="ds-card">
+        <div class="ds-type-row">
+          <div class="ds-type-meta"><strong>Display</strong>Instrument Serif · 64–180 px</div>
+          <div class="ds-disp">Слово <em>стало</em> плотью.</div>
+        </div>
+        <div class="ds-type-row">
+          <div class="ds-type-meta"><strong>H1</strong>Instrument Serif · 36 px</div>
+          <div class="ds-h1">Восьмая глава Послания к Римлянам</div>
+        </div>
+        <div class="ds-type-row">
+          <div class="ds-type-meta"><strong>Body</strong>Geist · 16 px</div>
+          <div class="ds-body">«Не любите мира, ни того, что в мире: кто любит мир, в том нет любви Отчей».</div>
+        </div>
+        <div class="ds-type-row">
+          <div class="ds-type-meta"><strong>Mono</strong>Geist Mono · 13 px</div>
+          <div class="ds-mono">— BIBLE.STUDY/V.4 · LESSON_03 · ACTIVE</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-section">
+      <div class="ds-h"><span class="ds-h-num">02</span> Цветовая палитра</div>
+      <div class="palette-grid">
+        <div class="palette-tile" style="background: var(--bg); color: var(--text);"><strong>BG</strong><span>#0a0d18</span></div>
+        <div class="palette-tile" style="background: var(--bg-2); color: var(--text);"><strong>BG-2</strong><span>#11162a</span></div>
+        <div class="palette-tile" style="background: var(--bg-elev); color: var(--text);"><strong>Elevated</strong><span>#1d2647</span></div>
+        <div class="palette-tile" style="background: var(--amber); color: var(--bg); border: none;"><strong>Amber</strong><span>#f4c430</span></div>
+        <div class="palette-tile" style="background: var(--crimson); color: var(--bg); border: none;"><strong>Crimson</strong><span>#e54a6b</span></div>
+        <div class="palette-tile" style="background: var(--mint); color: var(--bg); border: none;"><strong>Mint</strong><span>#6ee7b7</span></div>
+      </div>
+    </div>
+
+    <div class="ds-section">
+      <div class="ds-h"><span class="ds-h-num">03</span> Кнопки и значки</div>
+      <div class="ds-card" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+        <button class="btn btn-amber">Войти в кабинет →</button>
+        <button class="btn btn-ghost">Посмотреть курсы</button>
+        <span class="b-card-tags" style="margin: 0;">
+          <span class="tag amber">Активно</span>
+          <span class="tag mint">Ветхий</span>
+          <span class="tag violet">Тема</span>
+          <span class="tag crimson">Для новых</span>
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const links = document.querySelectorAll('[data-section]');
+  const sections = document.querySelectorAll('.section');
+  links.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const target = link.dataset.section;
+      if (!target) return;
+      sections.forEach(s => s.classList.toggle('active', s.id === target));
+      document.querySelectorAll('.nav-links a').forEach(a => {
+        a.classList.toggle('active', a.dataset.section === target);
+      });
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    });
+  });
+
+  // Card hover — radial spotlight follows cursor
+  document.querySelectorAll('.b-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = ((e.clientX - r.left) / r.width) * 100;
+      const y = ((e.clientY - r.top) / r.height) * 100;
+      card.style.setProperty('--mx', x + '%');
+      card.style.setProperty('--my', y + '%');
+    });
+  });
+</script>
+</body>
+</html>

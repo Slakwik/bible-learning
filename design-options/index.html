@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Варианты дизайна — Изучение Библии</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Geist+Mono:wght@400;500&family=Geist:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Geist', system-ui, sans-serif;
+    background: #f6f4ee;
+    color: #1a1714;
+    min-height: 100vh;
+    padding: 60px 32px;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+  .eyebrow {
+    font-family: 'Geist Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #8c8170;
+    margin-bottom: 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: clamp(48px, 7vw, 84px);
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+  h1 em { font-style: italic; color: #6b1f2c; }
+  .lead {
+    font-size: 18px;
+    color: #5b5246;
+    max-width: 640px;
+    margin-bottom: 60px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid #ddd0b8;
+    border-radius: 20px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    display: flex; flex-direction: column;
+    transition: all 0.25s ease;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+  }
+
+  .preview {
+    height: 220px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-size: 56px;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    position: relative;
+    overflow: hidden;
+  }
+  .preview-1 { background: #f4efe2; color: #1a1714; }
+  .preview-1 em { font-style: italic; color: #6b1f2c; }
+  .preview-2 { background: linear-gradient(135deg, #faf6ef 0%, #f1e9d8 100%); color: #2a221a; }
+  .preview-2 em { font-style: italic; color: #c66a4f; }
+  .preview-3 { background: linear-gradient(135deg, #0a0d18 0%, #11162a 100%); color: #f3eee0; }
+  .preview-3 em { font-style: italic; background: linear-gradient(120deg, #f4c430, #e54a6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+  .preview small {
+    position: absolute; top: 14px; left: 18px;
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-style: normal;
+    opacity: 0.5;
+  }
+  .preview-3 small { color: #9aa1b6; opacity: 1; }
+
+  .card-body { padding: 24px 28px 28px; }
+  .card-tag {
+    display: inline-block;
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #8c8170;
+    margin-bottom: 10px;
+  }
+  .card-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 26px;
+    line-height: 1.15;
+    margin-bottom: 8px;
+  }
+  .card-desc {
+    font-size: 15px;
+    color: #5b5246;
+    line-height: 1.55;
+    margin-bottom: 16px;
+  }
+  .card-meta {
+    display: flex; gap: 14px; flex-wrap: wrap;
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #8c8170;
+    letter-spacing: 0.04em;
+    border-top: 1px solid #eee5d3;
+    padding-top: 14px;
+  }
+  .card-meta .dot::before { content: '·'; margin-right: 12px; }
+
+  .compare-table {
+    margin-top: 80px;
+    border-top: 1px solid #ddd0b8;
+    padding-top: 40px;
+  }
+  .compare-table h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 32px;
+    margin-bottom: 24px;
+    letter-spacing: -0.01em;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th {
+    text-align: left;
+    padding: 14px 12px;
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #8c8170;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid #ddd0b8;
+  }
+  td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #eee5d3;
+    vertical-align: top;
+    color: #2d2620;
+  }
+  td:first-child { color: #8c8170; font-family: 'Geist Mono', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; width: 180px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">— Три концепции дизайна</div>
+  <h1>Три направления для <em>«Изучения Библии»</em></h1>
+  <p class="lead">
+    Каждый вариант — самодостаточная HTML-презентация с пятью секциями: главная, каталог курсов, страница урока, форма входа и дизайн-система. Откройте каждый в новой вкладке, попереключайте секции через верхнее меню.
+  </p>
+
+  <div class="grid">
+    <a class="card" href="design-1.html" target="_blank">
+      <div class="preview preview-1"><small>01 / Editorial</small><span>Папи<em>рус</em></span></div>
+      <div class="card-body">
+        <div class="card-tag">N° 01 · Минимализм / Журнал</div>
+        <h3 class="card-title">«Папирус»</h3>
+        <p class="card-desc">Эстетика теологического журнала: кремовая бумага, линейки, итальянский курсив, drop-caps. Cormorant Garamond + PT Serif.</p>
+        <div class="card-meta">
+          <span>Cormorant Garamond</span>
+          <span class="dot">PT Serif</span>
+          <span class="dot">Wine accent</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="design-2.html" target="_blank">
+      <div class="preview preview-2"><small>02 / Humanist</small><span>Очаг</span></div>
+      <div class="card-body">
+        <div class="card-tag">N° 02 · Тёплый / Человечный</div>
+        <h3 class="card-title">«Очаг»</h3>
+        <p class="card-desc">Уютный дизайн в духе Notion и Substack: терракотовые акценты, мягкие карточки, иллюстрации в линейном стиле. Fraunces + Newsreader.</p>
+        <div class="card-meta">
+          <span>Fraunces</span>
+          <span class="dot">Newsreader</span>
+          <span class="dot">Терракота + шалфей</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="design-3.html" target="_blank">
+      <div class="preview preview-3"><small>03 / Bold</small><span>Зав<em>ет</em></span></div>
+      <div class="card-body">
+        <div class="card-tag">N° 03 · Смелый / Современный</div>
+        <h3 class="card-title">«Завет»</h3>
+        <p class="card-desc">Тёмная тема, крупная типографика, bento-сетка, спотлайт-эффекты. В духе Linear и Vercel. Instrument Serif + Geist.</p>
+        <div class="card-meta">
+          <span>Instrument Serif</span>
+          <span class="dot">Geist</span>
+          <span class="dot">Тёмный + янтарь</span>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <section class="compare-table">
+    <h2>Сравнение направлений</h2>
+    <table>
+      <thead>
+        <tr><th></th><th>Папирус</th><th>Очаг</th><th>Завет</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Личность</td>
+          <td>Журнал, тишина, классика</td>
+          <td>Друг, тепло, гостеприимство</td>
+          <td>Смелость, плотность, скорость</td>
+        </tr>
+        <tr>
+          <td>Аудитория</td>
+          <td>Зрелые читатели, любители книг</td>
+          <td>Широкая, домашние группы</td>
+          <td>Молодёжь, технари</td>
+        </tr>
+        <tr>
+          <td>Шрифты</td>
+          <td>Cormorant Garamond + PT Serif + PT Sans</td>
+          <td>Fraunces + Newsreader + DM Mono</td>
+          <td>Instrument Serif + Geist + Geist Mono</td>
+        </tr>
+        <tr>
+          <td>Цвета</td>
+          <td>Бумага · чернила · вино · золото</td>
+          <td>Кремовый · терракота · шалфей · золото</td>
+          <td>Тёмная навигация · янтарь · малина · мята</td>
+        </tr>
+        <tr>
+          <td>Сложность</td>
+          <td>Низкая. Чисто типографические решения.</td>
+          <td>Средняя. Иллюстрации SVG, мягкие карточки.</td>
+          <td>Высокая. Bento, тёмная тема, эффекты.</td>
+        </tr>
+        <tr>
+          <td>Преимущества</td>
+          <td>Вне моды, благородно, уважительно к содержанию</td>
+          <td>Универсально, тепло, легко расширять</td>
+          <td>Современно, выделяется, профессионально</td>
+        </tr>
+        <tr>
+          <td>Риски</td>
+          <td>Может казаться «сухим» молодёжи</td>
+          <td>Может казаться обычным</td>
+          <td>Тёмная тема для чтения Библии — неоднозначно</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+</body>
+</html>

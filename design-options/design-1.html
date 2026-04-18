@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Папирус — Дизайн 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f4efe2;
+    --paper-2: #ebe4d3;
+    --ink: #1a1714;
+    --ink-soft: #5b5246;
+    --ink-faint: #8c8170;
+    --rule: #c9bfa9;
+    --rule-soft: #ddd2bc;
+    --wine: #6b1f2c;
+    --wine-soft: #9d3a48;
+    --gold: #b48a3e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'PT Serif', Georgia, serif;
+    line-height: 1.65;
+    font-size: 17px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Subtle paper grain */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 1000;
+    background:
+      radial-gradient(ellipse at 10% 0%, rgba(180,138,62,0.04) 0%, transparent 50%),
+      radial-gradient(ellipse at 100% 100%, rgba(107,31,44,0.03) 0%, transparent 50%);
+    mix-blend-mode: multiply;
+  }
+
+  ::selection { background: var(--wine); color: var(--paper); }
+
+  /* ============ Masthead ============ */
+  .masthead {
+    position: sticky; top: 0; z-index: 50;
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
+    padding: 16px 56px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    font-family: 'PT Sans', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    backdrop-filter: blur(8px);
+  }
+  .masthead-left { color: var(--ink-soft); }
+  .masthead-brand {
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 22px;
+    text-transform: none;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+  }
+  .masthead-brand span { color: var(--wine); }
+  .masthead-nav {
+    display: flex; gap: 24px; justify-content: flex-end;
+  }
+  .masthead-nav a {
+    color: var(--ink-soft);
+    text-decoration: none; cursor: pointer;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .masthead-nav a:hover { color: var(--ink); }
+  .masthead-nav a.active { color: var(--wine); }
+  .masthead-nav a.active::before {
+    content: '·'; position: absolute; left: -10px; color: var(--wine);
+  }
+
+  /* ============ Section system ============ */
+  .section { display: none; min-height: calc(100vh - 56px); }
+  .section.active { display: block; animation: pageIn 0.6s ease; }
+  @keyframes pageIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* ============ HERO ============ */
+  .hero {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 80px 56px 100px;
+    position: relative;
+  }
+
+  .hero-eyebrow {
+    font-family: 'PT Sans', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    color: var(--ink-faint);
+    display: flex; align-items: center; gap: 18px;
+    margin-bottom: 80px;
+  }
+  .hero-eyebrow::after {
+    content: ''; flex: 1; height: 1px; background: var(--rule);
+  }
+  .hero-eyebrow strong { color: var(--ink-soft); font-weight: 700; }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(56px, 9vw, 132px);
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    margin-bottom: 0;
+    max-width: 1100px;
+  }
+  .hero-title em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--wine);
+  }
+  .hero-title .num {
+    font-feature-settings: "lnum";
+    color: var(--gold);
+    font-style: italic;
+  }
+
+  .hero-grid {
+    margin-top: 100px;
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 80px;
+    padding-top: 48px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .hero-meta-label {
+    font-family: 'PT Sans', sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--ink-faint);
+    margin-bottom: 18px;
+  }
+
+  .hero-verse {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 26px;
+    line-height: 1.45;
+    color: var(--ink);
+    position: relative;
+    padding-left: 32px;
+  }
+  .hero-verse::before {
+    content: '';
+    position: absolute; left: 0; top: 14px; bottom: 14px; width: 2px;
+    background: var(--wine);
+  }
+  .hero-verse cite {
+    display: block;
+    margin-top: 22px;
+    font-style: normal;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-family: 'PT Sans', sans-serif;
+    color: var(--ink-faint);
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 24px;
+    margin-top: 36px;
+    align-items: baseline;
+  }
+
+  .btn-primary {
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 16px 32px;
+    font-family: 'PT Sans', sans-serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.25s;
+  }
+  .btn-primary:hover { background: var(--wine); }
+
+  .btn-link {
+    color: var(--wine);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 18px;
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 2px;
+    transition: color 0.2s;
+  }
+  .btn-link:hover { color: var(--ink); }
+
+  .hero-stats {
+    display: flex;
+    gap: 56px;
+    margin-top: 48px;
+    padding-top: 36px;
+    border-top: 1px solid var(--rule-soft);
+  }
+  .stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 64px;
+    line-height: 1;
+    color: var(--ink);
+    font-feature-settings: "lnum";
+  }
+  .stat-num em {
+    font-style: italic;
+    color: var(--wine);
+  }
+  .stat-label {
+    font-family: 'PT Sans', sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    margin-top: 8px;
+  }
+
+  /* Sidebar floating note */
+  .hero-side {
+    position: absolute;
+    right: 56px;
+    top: 80px;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-family: 'PT Sans', sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--ink-faint);
+  }
+  @media (max-width: 1100px) { .hero-side { display: none; } }
+
+  /* ============ COURSES ============ */
+  .courses {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 64px 56px 100px;
+  }
+
+  .page-head {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 56px;
+    padding-bottom: 36px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 48px;
+    align-items: end;
+  }
+  .page-head-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: 110px;
+    line-height: 0.85;
+    color: var(--wine);
+  }
+  .page-head h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 56px;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+  .page-head p {
+    color: var(--ink-soft);
+    font-size: 17px;
+    max-width: 540px;
+  }
+
+  .course-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .course-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 220px 200px;
+    gap: 32px;
+    padding: 32px 0;
+    border-bottom: 1px solid var(--rule-soft);
+    align-items: baseline;
+    cursor: pointer;
+    transition: padding 0.3s ease;
+    position: relative;
+  }
+  .course-row:hover {
+    padding-left: 16px;
+  }
+  .course-row:hover .course-arrow {
+    transform: translateX(4px); opacity: 1;
+  }
+  .course-row::before {
+    content: ''; position: absolute; left: -16px; top: 50%; width: 0; height: 1px;
+    background: var(--wine);
+    transition: width 0.3s ease;
+  }
+  .course-row:hover::before { width: 12px; }
+
+  .course-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 28px;
+    color: var(--gold);
+    font-feature-settings: "lnum";
+  }
+  .course-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 1.15;
+    color: var(--ink);
+  }
+  .course-title em { color: var(--wine-soft); font-style: italic; }
+  .course-meta {
+    font-family: 'PT Sans', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+  }
+  .course-ref {
+    font-family: 'PT Serif', serif;
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 16px;
+    text-align: right;
+  }
+  .course-arrow {
+    position: absolute; right: 16px; top: 50%; transform: translate(0, -50%);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; font-size: 24px;
+    color: var(--wine);
+    opacity: 0; transition: all 0.3s ease;
+  }
+
+  /* ============ LESSON ============ */
+  .lesson {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 64px 56px 120px;
+  }
+
+  .lesson-header {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 48px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 64px;
+  }
+
+  .lesson-meta {
+    border-right: 1px solid var(--rule-soft);
+    padding-right: 32px;
+  }
+  .lesson-meta dt {
+    font-family: 'PT Sans', sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--ink-faint);
+    margin-top: 18px;
+    margin-bottom: 6px;
+  }
+  .lesson-meta dt:first-child { margin-top: 0; }
+  .lesson-meta dd {
+    font-family: 'PT Serif', serif;
+    color: var(--ink);
+    font-size: 15px;
+  }
+
+  .lesson-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(48px, 6vw, 84px);
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 18px;
+  }
+  .lesson-title em { font-style: italic; color: var(--wine); font-weight: 400; }
+  .lesson-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--ink-soft);
+  }
+
+  .lesson-body {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 48px;
+  }
+
+  .lesson-side {
+    position: sticky;
+    top: 90px; align-self: start;
+    border-right: 1px solid var(--rule-soft);
+    padding-right: 32px;
+  }
+  .lesson-side h4 {
+    font-family: 'PT Sans', sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--ink-faint);
+    margin-bottom: 14px;
+  }
+  .lesson-side ol {
+    list-style: none; counter-reset: day;
+  }
+  .lesson-side li {
+    counter-increment: day;
+    padding: 8px 0;
+    font-family: 'PT Serif', serif;
+    font-size: 14px;
+    color: var(--ink-soft);
+    border-top: 1px solid var(--rule-soft);
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .lesson-side li::before {
+    content: 'День ' counter(day) ' — ';
+    font-style: italic; color: var(--wine);
+  }
+  .lesson-side li:hover { color: var(--ink); }
+  .lesson-side li:first-child { border-top: none; padding-top: 0; }
+
+  .lesson-content {
+    max-width: 680px;
+    font-size: 18px; line-height: 1.7;
+  }
+  .lesson-content > p:first-of-type::first-letter {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    float: left;
+    font-size: 88px;
+    line-height: 0.9;
+    padding-right: 12px;
+    padding-top: 6px;
+    color: var(--wine);
+  }
+  .lesson-content p { margin-bottom: 18px; color: var(--ink); }
+  .lesson-content blockquote {
+    margin: 32px 0;
+    padding: 0 0 0 32px;
+    border-left: 2px solid var(--wine);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 22px;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+  .lesson-content blockquote cite {
+    display: block; margin-top: 14px;
+    font-family: 'PT Sans', sans-serif;
+    font-style: normal;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.22em;
+    color: var(--ink-faint);
+  }
+  .lesson-content h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 36px;
+    margin: 48px 0 18px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .lesson-content h2 .num {
+    font-style: italic; color: var(--gold); margin-right: 16px;
+    font-weight: 300;
+  }
+
+  .question {
+    margin: 36px 0;
+    padding: 24px 0 24px 28px;
+    border-left: 1px solid var(--rule);
+    position: relative;
+  }
+  .question::before {
+    content: '?';
+    position: absolute; left: -16px; top: 18px;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--paper-2);
+    color: var(--wine);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; font-size: 22px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .question-text {
+    font-family: 'PT Serif', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+  }
+  .question-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed var(--rule);
+    padding: 12px 0;
+    font-family: 'PT Serif', serif;
+    font-size: 17px;
+    color: var(--ink);
+    resize: vertical;
+    min-height: 80px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .question-input:focus {
+    border-bottom-color: var(--wine);
+    border-bottom-style: solid;
+  }
+  .question-input::placeholder {
+    color: var(--ink-faint); font-style: italic;
+  }
+
+  /* ============ LOGIN ============ */
+  .login-wrap {
+    min-height: calc(100vh - 56px);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+  }
+  .login-aside {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 80px 64px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    position: relative; overflow: hidden;
+  }
+  .login-aside::before {
+    content: '';
+    position: absolute; top: 0; right: 0; width: 500px; height: 500px;
+    background: radial-gradient(circle, var(--wine) 0%, transparent 60%);
+    opacity: 0.4;
+    transform: translate(40%, -40%);
+  }
+  .login-aside-eyebrow {
+    font-family: 'PT Sans', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    color: var(--paper-2);
+    opacity: 0.7;
+    position: relative;
+  }
+  .login-aside-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: 38px;
+    line-height: 1.25;
+    color: var(--paper);
+    position: relative;
+  }
+  .login-aside-quote::before {
+    content: '«';
+    font-size: 120px;
+    line-height: 1;
+    color: var(--wine-soft);
+    position: absolute; left: -50px; top: -40px;
+    opacity: 0.4;
+  }
+  .login-aside-cite {
+    font-family: 'PT Sans', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--paper-2);
+    opacity: 0.7;
+    position: relative;
+    margin-top: 18px;
+  }
+
+  .login-form-side {
+    padding: 80px 64px;
+    display: flex; flex-direction: column; justify-content: center;
+    max-width: 540px;
+  }
+  .login-form-eyebrow {
+    font-family: 'PT Sans', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    color: var(--ink-faint);
+    margin-bottom: 24px;
+  }
+  .login-form-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 56px;
+    line-height: 1;
+    color: var(--ink);
+    margin-bottom: 40px;
+  }
+  .login-form-title em { font-style: italic; color: var(--wine); }
+  .form-group { margin-bottom: 28px; }
+  .form-group label {
+    display: block;
+    font-family: 'PT Sans', sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--ink-faint);
+    margin-bottom: 10px;
+  }
+  .form-group input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--rule);
+    padding: 12px 0;
+    font-family: 'PT Serif', serif;
+    font-size: 18px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus { border-bottom-color: var(--wine); }
+  .form-actions {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 36px;
+  }
+  .form-link {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--wine);
+    text-decoration: none;
+    font-size: 16px;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 2px;
+  }
+
+  /* ============ DESIGN SYSTEM ============ */
+  .system-wrap {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 64px 56px 100px;
+  }
+  .system-section { margin-bottom: 80px; }
+  .system-section h3 {
+    font-family: 'PT Sans', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    color: var(--ink-faint);
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .type-specimen {
+    display: grid; grid-template-columns: 200px 1fr; gap: 40px;
+    margin-bottom: 24px; align-items: baseline;
+    padding-bottom: 24px; border-bottom: 1px solid var(--rule-soft);
+  }
+  .type-label {
+    font-family: 'PT Sans', sans-serif;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.22em;
+    color: var(--ink-faint);
+  }
+  .type-label small { display: block; font-size: 9px; opacity: 0.6; margin-top: 4px; letter-spacing: 0.15em; }
+  .specimen-display { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: 64px; line-height: 0.95; }
+  .specimen-display em { font-style: italic; color: var(--wine); }
+  .specimen-h1 { font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 400; }
+  .specimen-h2 { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-style: italic; color: var(--wine); }
+  .specimen-body { font-size: 17px; line-height: 1.7; max-width: 520px; }
+  .specimen-caption { font-family: 'PT Sans', sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 0.22em; color: var(--ink-faint); }
+
+  .palette {
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+  .swatch {
+    aspect-ratio: 4/5;
+    padding: 14px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    font-family: 'PT Sans', sans-serif;
+    font-size: 9px; text-transform: uppercase; letter-spacing: 0.18em;
+  }
+  .swatch-name { font-weight: 700; }
+  .swatch-hex { opacity: 0.7; }
+
+  .button-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: baseline; }
+
+  /* Footer */
+  .footer {
+    border-top: 1px solid var(--rule);
+    padding: 36px 56px;
+    text-align: center;
+    font-family: 'PT Sans', sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--ink-faint);
+    margin-top: 60px;
+  }
+
+  @media (max-width: 900px) {
+    .masthead { padding: 14px 24px; grid-template-columns: 1fr 1fr; }
+    .masthead-brand { display: none; }
+    .hero { padding: 60px 24px 80px; }
+    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+    .courses, .lesson, .system-wrap { padding: 48px 24px 80px; }
+    .page-head { grid-template-columns: 1fr; gap: 18px; }
+    .page-head-num { font-size: 64px; }
+    .course-row { grid-template-columns: 32px 1fr; gap: 16px; }
+    .course-meta, .course-ref { display: none; }
+    .lesson-header, .lesson-body { grid-template-columns: 1fr; gap: 24px; }
+    .lesson-meta, .lesson-side { border-right: none; padding-right: 0; border-bottom: 1px solid var(--rule); padding-bottom: 24px; }
+    .login-wrap { grid-template-columns: 1fr; }
+    .login-aside, .login-form-side { padding: 48px 28px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-left">Vol. I · 2026 · Санкт-Петербург</div>
+  <div class="masthead-brand">Изучение <span>Библии</span></div>
+  <nav class="masthead-nav">
+    <a data-section="hero" class="active">Главная</a>
+    <a data-section="courses">Курсы</a>
+    <a data-section="lesson">Урок</a>
+    <a data-section="login">Войти</a>
+    <a data-section="system">Стиль</a>
+  </nav>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="section active" id="hero">
+  <div class="hero">
+    <div class="hero-side">N° 001 · ВЫПУСК ПЕРВЫЙ</div>
+    <div class="hero-eyebrow">
+      <strong>Библейская читальня</strong> · Для домашних групп · С молитвой и тщанием
+    </div>
+
+    <h1 class="hero-title">
+      Священное<br>
+      Писание <em>как</em><br>
+      ежедневная <em>встреча</em><br>
+      с Богом<span class="num">.</span>
+    </h1>
+
+    <div class="hero-grid">
+      <div>
+        <div class="hero-meta-label">— Программа платформы</div>
+        <p style="font-size: 18px; line-height: 1.7; color: var(--ink);">
+          Платформа для совместного изучения Священного Писания. Тщательно подобранные курсы, вопросы для размышления, удобный личный архив ответов. Подходит для домашних групп и воскресных школ.
+        </p>
+        <div class="hero-actions">
+          <a class="btn-primary" data-section="courses">Открыть каталог</a>
+          <a class="btn-link" data-section="login">войти в кабинет</a>
+        </div>
+
+        <div class="hero-stats">
+          <div>
+            <div class="stat-num"><em>21</em></div>
+            <div class="stat-label">курс</div>
+          </div>
+          <div>
+            <div class="stat-num">227</div>
+            <div class="stat-label">уроков</div>
+          </div>
+          <div>
+            <div class="stat-num"><em>3</em>k+</div>
+            <div class="stat-label">вопросов</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="hero-meta-label">— Эпиграф</div>
+        <blockquote class="hero-verse">
+          Всё Писание богодухновенно и полезно для научения, для обличения, для исправления, для наставления в праведности.
+          <cite>— 2-е послание к Тимофею 3:16</cite>
+        </blockquote>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">МРО Санкт-Петербургский Центр «Духовное Возрождение» · ВН 78083859</footer>
+</section>
+
+<!-- ============ COURSES ============ -->
+<section class="section" id="courses">
+  <div class="courses">
+    <div class="page-head">
+      <div class="page-head-num">21</div>
+      <div>
+        <h1>Каталог <em style="font-style:italic;color:var(--wine);">курсов</em></h1>
+        <p>Каждый курс — последовательность уроков с комментариями и вопросами для размышления. Вы можете проходить их в одиночку или группой; ответы сохраняются в личном кабинете.</p>
+      </div>
+    </div>
+
+    <div class="course-list">
+      <div class="course-row">
+        <div class="course-num">i</div>
+        <div class="course-title"><em>Послание</em> Иакова</div>
+        <div class="course-meta">6 уроков · Иак. 1–5</div>
+        <div class="course-ref">Вера и дела</div>
+        <span class="course-arrow">→</span>
+      </div>
+      <div class="course-row">
+        <div class="course-num">ii</div>
+        <div class="course-title"><em>Послание</em> к Ефесянам</div>
+        <div class="course-meta">6 уроков · Еф. 1–6</div>
+        <div class="course-ref">Позиция во Христе</div>
+        <span class="course-arrow">→</span>
+      </div>
+      <div class="course-row">
+        <div class="course-num">iii</div>
+        <div class="course-title">Бытие, <em>часть первая</em></div>
+        <div class="course-meta">15 уроков · Быт. 1–25</div>
+        <div class="course-ref">От сотворения до Авраама</div>
+        <span class="course-arrow">→</span>
+      </div>
+      <div class="course-row">
+        <div class="course-num">iv</div>
+        <div class="course-title">Бытие, <em>часть вторая</em></div>
+        <div class="course-meta">15 уроков · Быт. 25–50</div>
+        <div class="course-ref">Патриархи</div>
+        <span class="course-arrow">→</span>
+      </div>
+      <div class="course-row">
+        <div class="course-num">v</div>
+        <div class="course-title">Иисус <em>Навин</em></div>
+        <div class="course-meta">6 уроков · Нав. 1–24</div>
+        <div class="course-ref">Вхождение в землю</div>
+        <span class="course-arrow">→</span>
+      </div>
+      <div class="course-row">
+        <div class="course-num">vi</div>
+        <div class="course-title">Амос и <em>Исаия</em></div>
+        <div class="course-meta">15 уроков · Ам., Ис.</div>
+        <div class="course-ref">Глас Божий к народу</div>
+        <span class="course-arrow">→</span>
+      </div>
+      <div class="course-row">
+        <div class="course-num">vii</div>
+        <div class="course-title"><em>Даниил</em></div>
+        <div class="course-meta">12 уроков · Дан. 1–12</div>
+        <div class="course-ref">Верность в чужой среде</div>
+        <span class="course-arrow">→</span>
+      </div>
+      <div class="course-row">
+        <div class="course-num">viii</div>
+        <div class="course-title">Деяния <em>апостолов</em></div>
+        <div class="course-meta">30 уроков · Деян. 1–28</div>
+        <div class="course-ref">Рождение Церкви</div>
+        <span class="course-arrow">→</span>
+      </div>
+      <div class="course-row">
+        <div class="course-num">ix</div>
+        <div class="course-title"><em>1 и 2</em> Коринфянам</div>
+        <div class="course-meta">29 уроков · 1–2 Кор.</div>
+        <div class="course-ref">Церковь, конфликты, утешение</div>
+        <span class="course-arrow">→</span>
+      </div>
+      <div class="course-row">
+        <div class="course-num">x</div>
+        <div class="course-title">Евангелие <em>от Марка</em></div>
+        <div class="course-meta">18 уроков · Мк. 1–16</div>
+        <div class="course-ref">Сын Божий в действии</div>
+        <span class="course-arrow">→</span>
+      </div>
+    </div>
+
+    <p style="margin-top: 60px; font-style: italic; color: var(--ink-soft); text-align: center; font-size: 18px; font-family: 'Cormorant Garamond', serif;">
+      и ещё одиннадцать курсов в каталоге &rarr;
+    </p>
+  </div>
+  <footer class="footer">МРО Санкт-Петербургский Центр «Духовное Возрождение»</footer>
+</section>
+
+<!-- ============ LESSON ============ -->
+<section class="section" id="lesson">
+  <div class="lesson">
+    <div class="lesson-header">
+      <dl class="lesson-meta">
+        <dt>Курс</dt>
+        <dd>Послание Иакова</dd>
+        <dt>Урок</dt>
+        <dd>Третий из шести</dd>
+        <dt>Чтение</dt>
+        <dd><em>Иак. 3:1–18</em></dd>
+        <dt>Дата</dt>
+        <dd>18 апреля 2026</dd>
+      </dl>
+      <div>
+        <h1 class="lesson-title">Сила <em>малого</em> языка</h1>
+        <div class="lesson-subtitle">О том, как слова рождают и разрушают миры</div>
+      </div>
+    </div>
+
+    <div class="lesson-body">
+      <aside class="lesson-side">
+        <h4>План урока</h4>
+        <ol>
+          <li>Учитель и ответственность</li>
+          <li>Язык и кораблик</li>
+          <li>Огонь, источник, дерево</li>
+          <li>Мудрость свыше</li>
+          <li>Личное применение</li>
+        </ol>
+      </aside>
+
+      <article class="lesson-content">
+        <p>Иаков пишет своим читателям предостережение, которое в нашем времени звучит ещё острее, чем в первом веке. Он напоминает: язык, эта малая часть тела, способна творить непропорционально великое — как доброе, так и злое.</p>
+
+        <p>В трёх образах апостол показывает власть языка над всей жизнью. Маленькая узда направляет коня. Малый руль управляет огромным кораблём. Крошечная искра пожирает целый лес. И всякий раз — чем меньше орудие, тем больше его влияние.</p>
+
+        <blockquote>
+          А язык укротить никто из людей не может: это — неудержимое зло; он исполнен смертоносного яда.
+          <cite>— Иак. 3:8</cite>
+        </blockquote>
+
+        <h2><span class="num">i.</span> Учитель и ответственность</h2>
+        <p>Иаков обращается прежде всего к тем, кто берёт на себя роль учителя в общине. «Не многие делайтесь учителями», — пишет он, и это не запрет, но призыв к трезвому осознанию: слово учителя имеет тяжёлый вес, и говорящий будет отвечать строже.</p>
+
+        <div class="question">
+          <div class="question-text">Подумайте: какие слова, сказанные вами на этой неделе, вы хотели бы взять обратно? Что в них было — раздражение, страх, гордыня?</div>
+          <textarea class="question-input" placeholder="Запишите свой ответ…"></textarea>
+        </div>
+
+        <h2><span class="num">ii.</span> Язык и кораблик</h2>
+        <p>Образ малой узды и небольшого руля показывает: для управления крупным организмом — будь то конь или корабль — не требуется грубой силы, нужна точность направления. Так и язык: не количество слов определяет жизнь общины, а их направление.</p>
+
+        <div class="question">
+          <div class="question-text">Где в вашей семье или общине сейчас «руль» поворачивается не туда? Что одно слово, сказанное вовремя, могло бы изменить?</div>
+          <textarea class="question-input" placeholder="Запишите свой ответ…"></textarea>
+        </div>
+
+        <h2><span class="num">iii.</span> Мудрость, сходящая свыше</h2>
+        <p>Апостол не оставляет нас в отчаянии. После описания власти языка он приводит контраст: есть мудрость земная, душевная, бесовская — а есть мудрость свыше. Эта мудрость «чиста, потом мирна, скромна, послушлива, полна милосердия и добрых плодов».</p>
+
+        <p>Удивительно: первое качество — чистота. Слова, рождённые из чистого сердца, естественно становятся мирными. Не наоборот.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LOGIN ============ -->
+<section class="section" id="login">
+  <div class="login-wrap">
+    <aside class="login-aside">
+      <div>
+        <div class="login-aside-eyebrow">— Из «Откровения от Иоанна»</div>
+      </div>
+      <div>
+        <blockquote class="login-aside-quote">
+          Се, стою у двери и стучу: если кто услышит голос Мой и отворит дверь, войду к нему, и буду вечерять с ним, и он со Мною.
+        </blockquote>
+        <div class="login-aside-cite">Откр. 3:20</div>
+      </div>
+      <div class="login-aside-eyebrow">N° 001 · 2026</div>
+    </aside>
+
+    <div class="login-form-side">
+      <div class="login-form-eyebrow">— Личный кабинет</div>
+      <h1 class="login-form-title">Войти в <em>читальню</em></h1>
+
+      <div class="form-group">
+        <label>Электронная почта</label>
+        <input type="email" placeholder="ivan@example.com">
+      </div>
+      <div class="form-group">
+        <label>Пароль</label>
+        <input type="password" placeholder="••••••••">
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-primary">Войти</button>
+        <a href="#" class="form-link">забыли пароль?</a>
+      </div>
+
+      <p style="margin-top: 60px; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 18px; color: var(--ink-soft);">
+        Ещё нет учётной записи? — <a href="#" style="color: var(--wine); border-bottom: 1px solid currentColor;">подайте заявку</a> в свободной форме, и пастор вашей общины откроет вам доступ.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DESIGN SYSTEM ============ -->
+<section class="section" id="system">
+  <div class="system-wrap">
+    <div class="page-head">
+      <div class="page-head-num">▮</div>
+      <div>
+        <h1>Дизайн-<em>система</em></h1>
+        <p>Типографика, цвет и элементы интерфейса. Дизайн черпает вдохновение в типографических традициях независимой богословской прессы XX века.</p>
+      </div>
+    </div>
+
+    <div class="system-section">
+      <h3>I. Типографика</h3>
+      <div class="type-specimen">
+        <div class="type-label">Display<small>Cormorant Garamond · 64–132 px</small></div>
+        <div class="specimen-display">Слово <em>стало</em> плотью</div>
+      </div>
+      <div class="type-specimen">
+        <div class="type-label">H1<small>Cormorant Garamond · 40 px</small></div>
+        <div class="specimen-h1">Восьмая глава Послания к Римлянам</div>
+      </div>
+      <div class="type-specimen">
+        <div class="type-label">H2 italic<small>Cormorant Garamond italic · 28 px</small></div>
+        <div class="specimen-h2">О надежде, которая не постыжает</div>
+      </div>
+      <div class="type-specimen">
+        <div class="type-label">Body<small>PT Serif · 17 px</small></div>
+        <div class="specimen-body">«Не любите мира, ни того, что в мире: кто любит мир, в том нет любви Отчей. Ибо всё, что в мире: похоть плоти, похоть очей и гордость житейская, не есть от Отца, но от мира сего».</div>
+      </div>
+      <div class="type-specimen">
+        <div class="type-label">Caption<small>PT Sans · 11 px · 0.22em tracking</small></div>
+        <div class="specimen-caption">— ВЫПУСК ПЕРВЫЙ · ВЕСНА 2026</div>
+      </div>
+    </div>
+
+    <div class="system-section">
+      <h3>II. Цветовая палитра</h3>
+      <div class="palette">
+        <div class="swatch" style="background: var(--paper); color: var(--ink);"><span class="swatch-name">Бумага</span><span class="swatch-hex">#f4efe2</span></div>
+        <div class="swatch" style="background: var(--paper-2); color: var(--ink);"><span class="swatch-name">Бумага 2</span><span class="swatch-hex">#ebe4d3</span></div>
+        <div class="swatch" style="background: var(--ink); color: var(--paper);"><span class="swatch-name">Чернила</span><span class="swatch-hex">#1a1714</span></div>
+        <div class="swatch" style="background: var(--wine); color: var(--paper);"><span class="swatch-name">Вино</span><span class="swatch-hex">#6b1f2c</span></div>
+        <div class="swatch" style="background: var(--gold); color: var(--ink);"><span class="swatch-name">Золото</span><span class="swatch-hex">#b48a3e</span></div>
+        <div class="swatch" style="background: var(--rule); color: var(--ink);"><span class="swatch-name">Линейка</span><span class="swatch-hex">#c9bfa9</span></div>
+      </div>
+    </div>
+
+    <div class="system-section">
+      <h3>III. Элементы управления</h3>
+      <div class="button-row">
+        <button class="btn-primary">Войти в кабинет</button>
+        <a class="btn-link">читать дальше</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const links = document.querySelectorAll('.masthead-nav a, [data-section]');
+  const sections = document.querySelectorAll('.section');
+  links.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const target = link.dataset.section;
+      if (!target) return;
+      sections.forEach(s => s.classList.toggle('active', s.id === target));
+      document.querySelectorAll('.masthead-nav a').forEach(a => {
+        a.classList.toggle('active', a.dataset.section === target);
+      });
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    });
+  });
+</script>
+</body>
+</html>
