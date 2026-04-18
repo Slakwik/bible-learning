@@ -151,7 +151,7 @@ def draw_highlight(c, text, x, y, width=650, size=14):
     c.drawString(x + 16, y + 12, text)
 
 
-TOTAL = 10
+TOTAL = 11
 
 def make_pdf(filename):
     c = canvas.Canvas(filename, pagesize=landscape(A4))
@@ -384,7 +384,66 @@ def make_pdf(filename):
     draw_footer(c, 9, TOTAL)
     c.showPage()
 
-    # ===== Slide 10: End =====
+    # ===== Slide 10: Themes =====
+    draw_bg(c)
+    draw_title(c, 'Темы оформления', 60, H - 90, size=32)
+    c.setFillColor(TEXT)
+    c.setFont(FONT, 14)
+    y = H - 130
+    y = draw_text(c, 'Каждый ученик может выбрать удобный для себя визуальный стиль платформы.',
+                  60, y, max_width=W - 120)
+    y = draw_text(c, 'Выбор сохраняется в профиле и применяется на всех устройствах.',
+                  60, y - 22, max_width=W - 120)
+
+    # 4 theme preview cards
+    cards = [
+        ('Классика',  'Тёмно-синий, золото',          HexColor('#fafaf8'), HexColor('#1a365d'), HexColor('#c9963b')),
+        ('Папирус',   'Кремовая бумага, вино',        HexColor('#f4efe2'), HexColor('#1a1714'), HexColor('#6b1f2c')),
+        ('Очаг',      'Тёплая палитра, терракота',    HexColor('#faf6ef'), HexColor('#2a221a'), HexColor('#c66a4f')),
+        ('Завет',     'Тёмная, янтарь',               HexColor('#0a0d18'), HexColor('#f3eee0'), HexColor('#f4c430')),
+    ]
+    cw = (W - 120 - 3 * 16) / 4   # card width
+    cy = H - 230
+    ch = 170
+    for i, (name, desc, bg, fg, accent) in enumerate(cards):
+        cx = 60 + i * (cw + 16)
+        c.setFillColor(bg)
+        c.setStrokeColor(BORDER)
+        c.setLineWidth(1)
+        c.roundRect(cx, cy - ch, cw, ch, 10, fill=1, stroke=1)
+        # Title with accent fragment
+        c.setFillColor(fg)
+        c.setFont(FONT_BOLD, 22)
+        c.drawString(cx + 16, cy - 40, name)
+        # Color stripe
+        c.setFillColor(accent)
+        c.rect(cx + 16, cy - 56, 56, 4, fill=1, stroke=0)
+        # Description
+        c.setFillColor(fg)
+        c.setFont(FONT, 11)
+        words = desc.split(' ')
+        line = ''
+        ty = cy - 80
+        for w in words:
+            test = (line + ' ' + w).strip()
+            if c.stringWidth(test, FONT, 11) > cw - 32:
+                c.drawString(cx + 16, ty, line)
+                line = w
+                ty -= 14
+            else:
+                line = test
+        if line:
+            c.drawString(cx + 16, ty, line)
+
+    # Highlight at bottom
+    draw_highlight(c,
+        'По умолчанию (для гостей) тема задаётся в _config.yml. Авторизованный ученик меняет её в личном кабинете.',
+        60, cy - ch - 45, width=W - 120)
+
+    draw_footer(c, 10, TOTAL)
+    c.showPage()
+
+    # ===== Slide 11: End =====
     draw_gradient_bg(c)
     c.setFillColor(WHITE)
     c.setFont(FONT_BOLD, 40)
@@ -403,7 +462,7 @@ def make_pdf(filename):
     c.setFillColor(WHITE)
     c.drawCentredString(W/2, H/2 - 90, '\u0421\u043f\u0430\u0441\u0438\u0431\u043e \u0437\u0430 \u0432\u043d\u0438\u043c\u0430\u043d\u0438\u0435!')
 
-    draw_footer(c, 10, TOTAL, light=True)
+    draw_footer(c, 11, TOTAL, light=True)
     c.showPage()
 
     c.save()
