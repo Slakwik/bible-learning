@@ -1,11 +1,11 @@
 ---
 layout: default
-title: "О курсе"
+title: "О платформе"
 ---
 
 <section class="container">
   <div style="padding-top: 40px;">
-    <h1>О курсе</h1>
+    <h1>О платформе</h1>
     <p style="color: var(--text-light); margin-bottom: 32px;">Материалы и презентации платформы «Изучение Библии»</p>
   </div>
 
@@ -13,20 +13,20 @@ title: "О курсе"
     <div class="about-card">
       <div class="about-card-icon">&#128220;</div>
       <h3>Презентация для церкви</h3>
-      <p>Обзор платформы: курсы, возможности для учеников и преподавателей, путь ученика, структура уроков.</p>
+      <p>Курсы, классы и расписание, роли ведущих и учеников, ответы и дерево админки.</p>
       <div class="about-card-actions">
-        <a href="{{ '/presentation.pdf' | relative_url }}" class="btn btn-primary btn-sm" target="_blank">Скачать PDF</a>
-        <span class="about-meta">11 слайдов &middot; PDF</span>
+        <a href="{{ '/presentation.pdf' | relative_url }}?v={{ site.time | date: '%s' }}" class="btn btn-primary btn-sm" target="_blank">Скачать PDF</a>
+        <span class="about-meta">14 слайдов &middot; PDF</span>
       </div>
     </div>
 
     <div class="about-card">
       <div class="about-card-icon">&#128187;</div>
       <h3>Техническая презентация</h3>
-      <p>Архитектура, технологии, безопасность, стоимость решения. Для тех, кто хочет разобраться в устройстве платформы.</p>
+      <p>Классы, роли, архитектура, безопасность и публикация сайта. Для тех, кто хочет разобраться в устройстве платформы.</p>
       <div class="about-card-actions">
-        <a href="{{ '/presentation.html' | relative_url }}" class="btn btn-outline btn-sm" target="_blank">Открыть слайды</a>
-        <span class="about-meta">14 слайдов &middot; HTML</span>
+        <a href="{{ '/presentation.html' | relative_url }}?v={{ site.time | date: '%s' }}" class="btn btn-outline btn-sm" target="_blank">Открыть слайды</a>
+        <span class="about-meta">17 слайдов &middot; HTML</span>
       </div>
     </div>
   </div>
@@ -36,7 +36,7 @@ title: "О курсе"
     <p>«Изучение Библии» — онлайн-платформа для совместного изучения Священного Писания. Подходит для домашних групп, воскресных школ и индивидуального изучения.</p>
 
     <h3 style="margin-top:24px;">Доступные курсы</h3>
-    <table class="admin-table" style="margin-top:12px;">
+    <div class="admin-table-wrap"><table class="admin-table" style="margin-top:12px;">
       <thead>
         <tr>
           <th>Курс</th>
@@ -67,15 +67,16 @@ title: "О курсе"
         <tr><td>Если будете молиться</td><td>8</td><td>8 уроков</td></tr>
         <tr><td>Библия: Божья удивительная книга</td><td>7</td><td>Обзор Библии</td></tr>
       </tbody>
-    </table>
+    </table></div>
 
     <h3 style="margin-top:32px;">Как это работает</h3>
     <ol class="about-steps">
       <li>Записаться на курс через форму на сайте</li>
       <li>Получить учётную запись от администратора</li>
-      <li>Войти на платформу и выбрать курс</li>
+      <li>Ведущий добавляет ученика в свой класс</li>
+      <li>Войти на платформу и открыть программу своего класса</li>
       <li>Читать уроки и отвечать на вопросы</li>
-      <li>Просмотреть или распечатать свои ответы</li>
+      <li>Просмотреть ответы класса перед встречей</li>
       <li>Обсудить на групповой встрече</li>
     </ol>
   </div>

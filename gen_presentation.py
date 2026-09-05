@@ -9,6 +9,8 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
 import os
+from pathlib import Path
+import argparse
 
 W, H = landscape(A4)
 
@@ -32,10 +34,12 @@ FONT_BOLD = 'Helvetica-Bold'
 dejavu_paths = [
     '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
     '/usr/share/fonts/dejavu/DejaVuSans.ttf',
+    '/System/Library/Fonts/Supplemental/Arial.ttf',
 ]
 dejavu_bold_paths = [
     '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
     '/usr/share/fonts/dejavu/DejaVuSans-Bold.ttf',
+    '/System/Library/Fonts/Supplemental/Arial Bold.ttf',
 ]
 
 for p in dejavu_paths:
@@ -50,6 +54,9 @@ for p in dejavu_bold_paths:
         FONT_BOLD = 'DejaVuBold'
         break
 
+
+if FONT == 'Helvetica' or FONT_BOLD == 'Helvetica-Bold':
+    raise RuntimeError('Нужен шрифт с кириллицей: установите DejaVu Sans или Arial.')
 
 def draw_bg(c, color=BG):
     c.setFillColor(color)
@@ -71,7 +78,7 @@ def draw_footer(c, num, total, light=False):
     col = Color(1, 1, 1, 0.4) if light else TEXT_LIGHT
     c.setFillColor(col)
     c.setFont(FONT, 9)
-    c.drawRightString(W - 40, 24, f'{num} / {total}')
+    c.drawRightString(W - 40, 24, f'{c.getPageNumber()} / {total}')
     if not light:
         c.drawString(40, 24, 'Изучение Библии')
 
@@ -151,7 +158,7 @@ def draw_highlight(c, text, x, y, width=650, size=14):
     c.drawString(x + 16, y + 12, text)
 
 
-TOTAL = 11
+TOTAL = 14
 
 def make_pdf(filename):
     c = canvas.Canvas(filename, pagesize=landscape(A4))
@@ -202,21 +209,21 @@ def make_pdf(filename):
         'Вопросы для размышления в каждом уроке',
         'Ответы сохраняются автоматически',
         'Просмотр и печать своих ответов',
-        'Отметки пройденных уроков',
+        'Свои классы и программа занятий',
     ]:
         y = draw_bullet(c, item, 80, y, size=13, max_width=300)
 
     # Right column
     c.setFillColor(PRIMARY)
     c.setFont(FONT_BOLD, 16)
-    c.drawString(W/2 + 20, H - 150, 'Для преподавателей')
+    c.drawString(W/2 + 20, H - 150, 'Для ведущих')
     y = H - 185
     for item in [
-        'Панель управления учениками',
-        'Просмотр ответов каждого ученика',
-        'Статистика по прохождению уроков',
-        'Форма записи новых учеников',
-        'Добавление новых курсов',
+        'Несколько собственных классов',
+        'Расписание и программа каждого класса',
+        'Добавление учеников в свой класс',
+        'Просмотр ответов своего класса',
+        'Архивирование завершённых классов',
     ]:
         y = draw_bullet(c, item, W/2 + 20, y, size=13, max_width=300)
 
@@ -273,7 +280,7 @@ def make_pdf(filename):
     # Stats row at bottom — inline label:num pairs, compact
     c.setFont(FONT_BOLD, 18)
     c.setFillColor(PRIMARY)
-    stat_text = '21 курс  \u00b7  227 уроков  \u00b7  3000+ вопросов'
+    stat_text = '21 курс  \u00b7  227 уроков  \u00b7  4 темы оформления'
     c.drawCentredString(W / 2, 55, stat_text)
 
     draw_footer(c, 4, TOTAL)
@@ -297,10 +304,10 @@ def make_pdf(filename):
     steps = [
         ('1.', 'Записаться на курс через форму на сайте'),
         ('2.', 'Получить учётную запись от администратора'),
-        ('3.', 'Войти на платформу'),
-        ('4.', 'Выбрать курс из каталога'),
-        ('5.', 'Читать уроки и отвечать на вопросы'),
-        ('6.', 'Просмотреть или распечатать свои ответы'),
+        ('3.', 'Ведущий добавляет ученика в свой класс'),
+        ('4.', 'Войти и открыть свой класс в разделе «Классы»'),
+        ('5.', 'Открыть урок из программы класса и записать ответы'),
+        ('6.', 'Подготовиться по ответам к следующей встрече'),
         ('7.', 'Обсудить на групповой встрече'),
     ]
     for num, text in steps:
@@ -325,7 +332,7 @@ def make_pdf(filename):
         'Вопросы для самостоятельного размышления',
         'Поля для записи ответов (автосохранение)',
         'Разделы «Познайте истину» и «Примените истину»',
-        'Навигация между уроками курса',
+        'В классе переходы следуют его программе уроков',
     ]
     for item in items:
         y = draw_bullet(c, item, 80, y, max_width=650)
@@ -341,14 +348,14 @@ def make_pdf(filename):
     c.setFillColor(TEXT)
     c.setFont(FONT, 16)
     y = H - 140
-    y = draw_text(c, 'Каждый ученик может в любой момент просмотреть все свои ответы:', 80, y, max_width=700)
+    y = draw_text(c, 'Личное изучение и занятия в классах имеют отдельные ответы:', 80, y, max_width=700)
     y -= 20
     items = [
-        'Выбор курса из списка',
-        'Полный текст вопроса + ваш ответ',
-        'Дата последнего сохранения',
-        'Кнопка печати — чистый формат без лишних элементов',
-        'Удобно для подготовки к групповой встрече',
+        '«Мои ответы»: личные ответы по выбранному курсу',
+        'Личные ответы можно просмотреть и распечатать',
+        'Ответы класса открываются через этот класс',
+        'В разных классах ответы на один урок сохраняются отдельно',
+        'Ведущий читает ответы учеников только в своих классах',
     ]
     for item in items:
         y = draw_bullet(c, item, 80, y, max_width=650)
@@ -356,32 +363,58 @@ def make_pdf(filename):
     draw_footer(c, 8, TOTAL)
     c.showPage()
 
-    # ===== Slide 9: Admin =====
+    # Classes and roles, added September 2026
+    for title, items in [
+        ('Классы', [
+            'У класса есть ведущий и собственный состав учеников',
+            'Ведущий задаёт день, время, длительность и первую встречу',
+            'Встречи проходят еженедельно по московскому времени',
+            'Для каждого класса выбираются уроки и их порядок',
+            'Можно указать место встречи или ссылку для подключения',
+            'Один ведущий может вести несколько классов одновременно',
+        ]),
+        ('Кто организует занятия', [
+            'Администратор создаёт ведущих или назначает эту роль',
+            'Ведущий создаёт свои классы и выбирает программу',
+            'Ведущий добавляет уже зарегистрированных учеников',
+            'Ученик открывает класс, в который его добавил ведущий',
+            'Самостоятельной записи в класс нет',
+        ]),
+        ('Доступ к ответам', [
+            'Ученик видит свои классы и собственные ответы',
+            'Ведущий управляет своими классами и читает их ответы',
+            'Личные ответы ученика недоступны ведущему',
+            'Администратор управляет пользователями и всеми классами',
+            'После исключения ученика доступ к классу закрывается',
+            'Архивный класс можно читать, но ответы в нём не меняются',
+        ]),
+    ]:
+        draw_bg(c)
+        draw_title(c, title, 60, H - 90, size=32)
+        y = H - 155
+        for item in items:
+            y = draw_bullet(c, item, 80, y, size=15, max_width=650)
+        draw_footer(c, c.getPageNumber(), TOTAL)
+        c.showPage()
+
+    # Admin hierarchy: illustrative labels, no real user data
     draw_bg(c)
-    draw_title(c, 'Панель администратора', 60, H - 90, size=32)
-
-    c.setFillColor(PRIMARY)
-    c.setFont(FONT_BOLD, 16)
-    c.drawString(80, H - 150, 'Пользователи')
-    y = H - 180
-    for item in ['Добавление новых учеников', 'Редактирование и удаление', 'Назначение ролей']:
-        y = draw_bullet(c, item, 80, y, size=13, max_width=300)
-
-    c.setFillColor(PRIMARY)
-    c.setFont(FONT_BOLD, 16)
-    c.drawString(80, y - 10, 'Прогресс')
-    y -= 40
-    for item in ['Просмотр ответов каждого ученика', 'Фильтрация по курсам и урокам', 'Статистика прохождения']:
-        y = draw_bullet(c, item, 80, y, size=13, max_width=300)
-
-    c.setFillColor(PRIMARY)
-    c.setFont(FONT_BOLD, 16)
-    c.drawString(W/2 + 20, H - 150, 'Уроки')
-    y = H - 180
-    for item in ['Список всех уроков', 'Количество ответивших учеников', 'Быстрый переход к уроку']:
-        y = draw_bullet(c, item, W/2 + 20, y, size=13, max_width=300)
-
-    draw_footer(c, 9, TOTAL)
+    draw_title(c, 'Администратор: ведущие и классы', 60, H - 85, size=30)
+    draw_text(c, 'Вкладка «Ведущие и классы» показывает состав каждой группы.', 60, H - 125, size=15)
+    rows = [(0, 'Ведущий'), (1, 'Воскресный класс'), (2, 'Ученики воскресного класса'),
+            (1, 'Вечерний класс'), (2, 'Ученики вечернего класса')]
+    y = H - 190
+    for level, label in rows:
+        x = 85 + level * 36
+        c.setStrokeColor(ACCENT)
+        c.setLineWidth(2)
+        if level:
+            c.line(x - 20, y + 6, x - 6, y + 6)
+        draw_text(c, label, x, y, size=20 if level == 0 else 17,
+                  font=FONT_BOLD if level < 2 else FONT)
+        y -= 48
+    draw_text(c, 'Пример структуры. У одного ведущего может быть несколько классов.', 60, 90, size=13, color=TEXT_LIGHT)
+    draw_footer(c, c.getPageNumber(), TOTAL)
     c.showPage()
 
     # ===== Slide 10: Themes =====
@@ -437,7 +470,7 @@ def make_pdf(filename):
 
     # Highlight at bottom
     draw_highlight(c,
-        'По умолчанию (для гостей) тема задаётся в _config.yml. Авторизованный ученик меняет её в личном кабинете.',
+        'Профиль доступен из шапки сайта. Здесь можно выбрать удобную тему оформления.',
         60, cy - ch - 45, width=W - 120)
 
     draw_footer(c, 10, TOTAL)
@@ -460,7 +493,8 @@ def make_pdf(filename):
 
     c.setFont(FONT_BOLD, 20)
     c.setFillColor(WHITE)
-    c.drawCentredString(W/2, H/2 - 90, '\u0421\u043f\u0430\u0441\u0438\u0431\u043e \u0437\u0430 \u0432\u043d\u0438\u043c\u0430\u043d\u0438\u0435!')
+    c.drawCentredString(W/2, H/2 - 90, 'learning.spbchurch.ru')
+    c.linkURL('https://learning.spbchurch.ru/', (200, H/2 - 100, W-200, H/2 - 65), relative=0)
 
     draw_footer(c, 11, TOTAL, light=True)
     c.showPage()
@@ -470,4 +504,7 @@ def make_pdf(filename):
 
 
 if __name__ == '__main__':
-    make_pdf('/claude/slakwik-biblelearning/presentation.pdf')
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--output', type=Path, default=Path(__file__).with_name('presentation.pdf'))
+    args = parser.parse_args()
+    make_pdf(str(args.output))

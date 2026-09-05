@@ -35,3 +35,4 @@ exclude:
   - package-lock.json
   - README.md
   - AGENTS.md
+  - gen_presentation.py
