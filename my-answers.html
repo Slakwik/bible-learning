@@ -147,7 +147,10 @@ window.addEventListener('bible-auth-ready', function(e) {
         printBtn.style.display = '';
       }
 
-      output.innerHTML = html;
+      if (select.value === courseKey) output.innerHTML = html;
+    }).catch(function() {
+      output.textContent = 'Не удалось загрузить ответы. Выберите курс ещё раз, чтобы повторить попытку.';
+      printBtn.style.display = 'none';
     });
   });
 

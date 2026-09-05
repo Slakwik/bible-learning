@@ -3,6 +3,8 @@
 
   // Current user profile (from Firestore)
   var currentProfile = null;
+  var authResolved = false;
+  var resolvedUser = null;
 
   function renderAuthNav(user, profile) {
     var nav = document.getElementById('authNav');
@@ -60,7 +62,10 @@
           window.location.href = '/lessons/';
         })
         .catch(function(err) {
-          errorEl.textContent = 'Неверный email или пароль';
+          errorEl.textContent = err.code === 'auth/network-request-failed'
+            ? 'Нет связи с сервисом входа. Проверьте подключение.'
+            : err.code === 'auth/too-many-requests'
+              ? 'Слишком много попыток. Попробуйте позже.' : 'Неверный email или пароль';
           errorEl.classList.add('visible');
           submitBtn.disabled = false;
           submitBtn.textContent = 'Войти';
@@ -68,42 +73,46 @@
     });
   }
 
-  // Auth state listener
-  BibleDB.onAuthChanged(function(user) {
-    if (user) {
-      BibleDB.getUserProfile(user.uid).then(function(profile) {
-        if (!profile) {
-          // Profile missing — create minimal one
-          profile = { name: user.email, role: 'user', email: user.email };
-          BibleDB.setUserProfile(user.uid, profile);
-        }
-        currentProfile = profile;
-        currentProfile.uid = user.uid;
-        renderAuthNav(user, profile);
+  function publishAuth(user, profile) {
+    resolvedUser = user;
+    currentProfile = profile;
+    authResolved = true;
+    renderAuthNav(user, profile);
+    window.dispatchEvent(new CustomEvent('bible-auth-ready', { detail: { user: user, profile: profile } }));
+  }
 
-        // Fire custom event for other scripts
-        window.dispatchEvent(new CustomEvent('bible-auth-ready', { detail: { user: user, profile: profile } }));
-      });
-    } else {
+  BibleDB.onAuthChanged(function(user) {
+    if (!user) { publishAuth(null, null); return; }
+    BibleDB.getUserProfile(user.uid).then(function(profile) {
+      if (profile) return profile;
+      profile = { name: user.email, role: 'user', email: user.email };
+      return BibleDB.setUserProfile(user.uid, profile).then(function() { return profile; });
+    }).then(function(profile) {
+      if (BibleDB.getCurrentUser() !== user) return;
+      profile.uid = user.uid;
+      publishAuth(user, profile);
+    }).catch(function(err) {
+      if (BibleDB.getCurrentUser() !== user) return;
       currentProfile = null;
-      renderAuthNav(null, null);
-      window.dispatchEvent(new CustomEvent('bible-auth-ready', { detail: { user: null, profile: null } }));
-    }
+      renderAuthNav(user, { name: user.email, role: 'user' });
+      var message = document.getElementById('authError');
+      if (!message) {
+        message = document.createElement('div');
+        message.id = 'authError';
+        message.className = 'container form-error visible';
+        message.setAttribute('role', 'alert');
+        document.querySelector('main').prepend(message);
+      }
+      message.textContent = 'Не удалось загрузить профиль. Обновите страницу, чтобы повторить попытку.';
+      window.dispatchEvent(new CustomEvent('bible-auth-error', { detail: { error: err } }));
+    });
   });
 
-  // Expose
   window.BibleAuth = {
     getProfile: function() { return currentProfile; },
     onReady: function(cb) {
-      if (currentProfile !== null || !BibleDB.getCurrentUser()) {
-        // Already resolved
-        window.addEventListener('bible-auth-ready', function handler(e) {
-          cb(e.detail.user, e.detail.profile);
-        });
-      }
-      window.addEventListener('bible-auth-ready', function(e) {
-        cb(e.detail.user, e.detail.profile);
-      });
+      window.addEventListener('bible-auth-ready', function(e) { cb(e.detail.user, e.detail.profile); });
+      if (authResolved) cb(resolvedUser, currentProfile);
     }
   };
 

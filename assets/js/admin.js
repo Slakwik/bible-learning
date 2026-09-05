@@ -1,9 +1,7 @@
 (function() {
   'use strict';
 
-  window.addEventListener('bible-auth-ready', function(e) {
-    var user = e.detail.user;
-    var profile = e.detail.profile;
+  BibleAuth.onReady(function(user, profile) {
 
     if (!user || !profile || profile.role !== 'admin') {
       document.querySelector('.admin-page .container').innerHTML =
@@ -18,6 +16,11 @@
   });
 
   function initAdmin() {
+    function showError(err) {
+      var el = document.getElementById('adminError');
+      el.textContent = 'Не удалось выполнить операцию. Проверьте соединение и права доступа, затем повторите попытку.';
+      el.classList.add('visible');
+    }
     // === Tabs ===
     var tabs = document.querySelectorAll('.admin-tab');
     var panels = document.querySelectorAll('.admin-panel');
@@ -55,7 +58,7 @@
           '<td>' + (u.role === 'admin' ? 'Админ' : 'Ученик') + '</td>' +
           '<td>' +
             '<button class="btn btn-outline btn-sm edit-user" data-uid="' + u.uid + '">Изменить</button> ' +
-            '<button class="btn btn-danger btn-sm delete-user" data-uid="' + u.uid + '">Удалить</button>' +
+            '<button class="btn btn-danger btn-sm delete-user" data-uid="' + u.uid + '"' + (u.uid === BibleDB.getCurrentUser().uid ? ' disabled' : '') + '>Удалить профиль</button>' +
           '</td>';
         tbody.appendChild(tr);
       });
@@ -71,8 +74,8 @@
       tbody.querySelectorAll('.delete-user').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var uid = btn.getAttribute('data-uid');
-          if (confirm('Удалить этого пользователя? Его данные в Firestore будут удалены.')) {
-            BibleDB.deleteUserProfile(uid).then(loadUsers);
+          if (confirm('Удалить профиль? Учётная запись входа и ответы сохранятся. При следующем входе будет создан профиль ученика.')) {
+            BibleDB.deleteUserProfile(uid).then(loadUsers).catch(showError);
           }
         });
       });
@@ -84,8 +87,9 @@
 
     document.getElementById('addUserBtn').addEventListener('click', function() {
       document.getElementById('modalTitle').textContent = 'Добавить пользователя';
-      document.getElementById('editUid').value = '';
       form.reset();
+      document.getElementById('editUid').value = '';
+      document.getElementById('userFormError').classList.remove('visible');
       document.getElementById('uEmail').removeAttribute('disabled');
       document.getElementById('uPassword').closest('.form-group').style.display = '';
       modal.classList.add('active');
@@ -136,7 +140,11 @@
         BibleDB.setUserProfile(uid, { name: name, role: role }).then(function() {
           modal.classList.remove('active');
           submitBtn.disabled = false;
-          loadUsers();
+          loadUsers().catch(showError);
+        }).catch(function() {
+          errorEl.textContent = 'Не удалось сохранить изменения. Повторите попытку.';
+          errorEl.classList.add('visible');
+          submitBtn.disabled = false;
         });
       } else {
         // Create new
@@ -157,7 +165,7 @@
         }).then(function() {
           modal.classList.remove('active');
           submitBtn.disabled = false;
-          loadUsers();
+          loadUsers().catch(showError);
         }).catch(function(err) {
           var msg = 'Ошибка создания';
           if (err.code === 'auth/email-already-in-use') msg = 'Этот email уже зарегистрирован';
@@ -230,8 +238,8 @@
           html += '</ul></div>';
         });
 
-        content.innerHTML = html;
-      });
+        if (document.getElementById('progressUser').value === uid) content.innerHTML = html;
+      }).catch(showError);
     });
 
     // === Lessons stats ===
@@ -246,11 +254,11 @@
           });
           cell.textContent = count;
         });
-      });
+      }).catch(showError);
     }
 
     // Load data
-    loadUsers();
+    loadUsers().catch(showError);
   }
 
   function escHtml(str) {

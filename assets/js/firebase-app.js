@@ -35,8 +35,7 @@
     }
     return secondaryApp.auth().createUserWithEmailAndPassword(email, password)
       .then(function(cred) {
-        secondaryApp.auth().signOut();
-        return cred;
+        return secondaryApp.auth().signOut().then(function() { return cred; });
       });
   }
 

@@ -27,3 +27,9 @@ exclude:
   - "*.docx"
   - node_modules
   - vendor
+  - firebase.json
+  - firestore.rules
+  - tests
+  - package.json
+  - package-lock.json
+  - README.md

@@ -135,7 +135,21 @@
 2. Создайте веб-приложение и скопируйте конфиг в `assets/js/firebase-app.js`
 3. **Authentication** → включите провайдер **Email/Password**
 4. **Firestore Database** → создайте базу данных
-5. **Firestore → Rules** → вставьте содержимое `firestore.rules`
+5. **Firestore → Rules** → вставьте содержимое `firestore.rules` и нажмите **Publish**. Тестовый режим с датой окончания для рабочего сайта не подходит.
+
+Правила публикуются отдельно от Jekyll: обновление файлов на сервере само по себе не меняет настройки Firebase. Альтернатива консоли после авторизации Firebase CLI:
+
+```bash
+firebase deploy --only firestore:rules --project bible-learning-b4b4d
+```
+
+Ученики читают свой профиль и свои ответы; администраторы управляют профилями и просматривают ответы. Ученик не может назначить себе роль администратора. Кнопка «Удалить профиль» не удаляет аккаунт Firebase Authentication и ответы. Полное удаление аккаунта выполняется в Firebase Console.
+
+Проверки JavaScript (Node.js 22+):
+
+```bash
+node --test tests/*.test.cjs
+```
 
 ### Создание первого администратора
 

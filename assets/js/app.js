@@ -1,76 +1,67 @@
 (function() {
   'use strict';
-
   var lessonEl = document.getElementById('lessonContent');
   if (!lessonEl) return;
-
   var lessonSlug = lessonEl.getAttribute('data-lesson');
   var authGate = document.getElementById('authGate');
   var lessonActions = document.getElementById('lessonActions');
+  var saveBtn = document.getElementById('saveAnswers');
+  var textareas = lessonEl.querySelectorAll('textarea[data-question]');
+  var currentUid = null;
+  var loaded = false;
+  var saveQueue = Promise.resolve();
+  var statusTimer;
 
-  window.addEventListener('bible-auth-ready', function(e) {
-    var user = e.detail.user;
-    var profile = e.detail.profile;
-
-    if (!user) {
-      authGate.style.display = '';
-      return;
-    }
-
-    lessonEl.style.display = '';
-    lessonActions.style.display = '';
-    loadAndFillAnswers(user.uid);
+  BibleAuth.onReady(function(user) {
+    currentUid = user ? user.uid : null;
+    loaded = false;
+    authGate.style.display = user ? 'none' : '';
+    lessonEl.style.display = user ? '' : 'none';
+    lessonActions.style.display = user ? '' : 'none';
+    saveBtn.disabled = true;
+    textareas.forEach(function(ta) { ta.disabled = true; ta.value = ''; });
+    if (!user) return;
+    BibleDB.getAnswers(user.uid, lessonSlug).then(function(saved) {
+      if (currentUid !== user.uid) return;
+      textareas.forEach(function(ta) {
+        ta.value = (saved || {})[ta.getAttribute('data-question')] || '';
+        ta.disabled = false;
+      });
+      loaded = true;
+      saveBtn.disabled = false;
+    }).catch(function() {
+      showStatus('Не удалось загрузить ответы. Обновите страницу для повторной попытки.', true);
+    });
   });
 
-  function loadAndFillAnswers(uid) {
-    BibleDB.getAnswers(uid, lessonSlug).then(function(saved) {
-      if (!saved) saved = {};
-      var textareas = lessonEl.querySelectorAll('textarea[data-question]');
-      textareas.forEach(function(ta) {
-        var key = ta.getAttribute('data-question');
-        if (saved[key]) ta.value = saved[key];
-      });
+  saveBtn.addEventListener('click', doSave);
+  textareas.forEach(function(ta) { ta.addEventListener('blur', doSave); });
 
-      // Save button
-      var saveBtn = document.getElementById('saveAnswers');
-      if (saveBtn) {
-        saveBtn.addEventListener('click', function() { doSave(uid); });
-      }
-
-      // Auto-save on blur
-      textareas.forEach(function(ta) {
-        ta.addEventListener('blur', function() {
-          if (ta.value.trim()) doSave(uid);
-        });
-      });
-    });
-  }
-
-  function doSave(uid) {
+  function doSave() {
+    if (!loaded || !currentUid) return;
+    var uid = currentUid;
     var answers = {};
-    var textareas = lessonEl.querySelectorAll('textarea[data-question]');
     textareas.forEach(function(ta) {
       var val = ta.value.trim();
       if (val) answers[ta.getAttribute('data-question')] = val;
     });
-
-    if (Object.keys(answers).length === 0) {
-      showStatus('Нет ответов для сохранения', true);
-      return;
-    }
-
-    BibleDB.saveAnswers(uid, lessonSlug, answers).then(function() {
-      showStatus('Ответы сохранены!', false);
+    showStatus('Сохранение...', false);
+    // Preserve edit order, including clearing the final answer.
+    saveQueue = saveQueue.then(function() {
+      return BibleDB.saveAnswers(uid, lessonSlug, answers);
+    }).then(function() {
+      if (currentUid === uid) showStatus('Ответы сохранены!', false);
     }).catch(function() {
-      showStatus('Ошибка сохранения', true);
+      if (currentUid === uid) showStatus('Ошибка сохранения. Нажмите «Сохранить ответы», чтобы повторить.', true);
     });
   }
 
   function showStatus(msg, isError) {
     var el = document.getElementById('saveStatus');
     if (!el) return;
+    clearTimeout(statusTimer);
     el.textContent = msg;
     el.style.color = isError ? '#c0392b' : 'var(--primary)';
-    setTimeout(function() { el.textContent = ''; }, 3000);
+    if (!isError) statusTimer = setTimeout(function() { el.textContent = ''; }, 3000);
   }
 })();
