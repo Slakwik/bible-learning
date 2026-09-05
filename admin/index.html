@@ -4,10 +4,12 @@ title: "Админ-панель"
 ---
 
 <h1>Админ-панель</h1>
+<p>Назначайте ведущих в карточке пользователя. Управление классами доступно в разделе <a href="/classes/">«Классы»</a>.</p>
 <div id="adminError" class="form-error" role="alert"></div>
 
 <div class="admin-tabs">
   <button class="admin-tab active" data-tab="users">Пользователи</button>
+  <button class="admin-tab" data-tab="leaders">Ведущие и классы</button>
   <button class="admin-tab" data-tab="progress">Прогресс учеников</button>
   <button class="admin-tab" data-tab="lessons">Уроки</button>
 </div>
@@ -18,7 +20,7 @@ title: "Админ-панель"
     <h2>Управление пользователями</h2>
     <button class="btn btn-primary btn-sm" id="addUserBtn">+ Добавить</button>
   </div>
-  <table class="admin-table">
+  <div class="admin-table-wrap"><table class="admin-table">
     <thead>
       <tr>
         <th>Имя</th>
@@ -28,7 +30,13 @@ title: "Админ-панель"
       </tr>
     </thead>
     <tbody id="usersTableBody"></tbody>
-  </table>
+  </table></div>
+</div>
+
+<div class="admin-panel" id="panel-leaders">
+  <div class="admin-toolbar"><h2>Ведущие, классы и ученики</h2><button type="button" id="refreshLeaderTree" class="btn btn-outline btn-sm">Обновить</button></div>
+  <p>У каждого ведущего может быть несколько классов. Разверните класс, чтобы увидеть его учеников.</p>
+  <div id="leaderTree" aria-live="polite"></div>
 </div>
 
 <!-- Progress panel -->
@@ -48,7 +56,7 @@ title: "Админ-панель"
 <div class="admin-panel" id="panel-lessons">
   <h2>Уроки</h2>
   <p style="color:var(--text-light);margin-bottom:16px;">Список доступных уроков. Для добавления новых уроков создайте файл в папке <code>_lessons/</code>.</p>
-  <table class="admin-table">
+  <div class="admin-table-wrap"><table class="admin-table">
     <thead>
       <tr>
         <th>#</th>
@@ -68,7 +76,7 @@ title: "Админ-панель"
       </tr>
       {% endfor %}
     </tbody>
-  </table>
+  </table></div>
 </div>
 
 <!-- Add/Edit user modal -->
@@ -93,6 +101,7 @@ title: "Админ-панель"
         <label for="uRole">Роль</label>
         <select id="uRole">
           <option value="user">Ученик</option>
+          <option value="leader">Ведущий</option>
           <option value="admin">Администратор</option>
         </select>
       </div>

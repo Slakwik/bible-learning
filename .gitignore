@@ -7,3 +7,6 @@ Gemfile.lock
 *.docx
 .claude/
 lecture/
+
+node_modules/
+*-debug.log

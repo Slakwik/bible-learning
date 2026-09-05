@@ -25,6 +25,7 @@ exclude:
   - Gemfile
   - Gemfile.lock
   - "*.docx"
+  - "*.log"
   - node_modules
   - vendor
   - firebase.json
@@ -33,3 +34,4 @@ exclude:
   - package.json
   - package-lock.json
   - README.md
+  - AGENTS.md

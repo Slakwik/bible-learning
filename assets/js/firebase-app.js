@@ -77,17 +77,18 @@
 
   // ========== Answers (Firestore) ==========
 
-  function getAnswers(uid, lessonSlug) {
-    return db.collection('answers').doc(uid + '_' + lessonSlug).get().then(function(doc) {
+  function getAnswers(uid, lessonSlug, classId) {
+    return answerRef(uid, lessonSlug, classId).get().then(function(doc) {
       return doc.exists ? doc.data() : null;
     });
   }
 
-  function saveAnswers(uid, lessonSlug, answers) {
+  function saveAnswers(uid, lessonSlug, answers, classId) {
     answers._savedAt = new Date().toISOString();
     answers._uid = uid;
     answers._lesson = lessonSlug;
-    return db.collection('answers').doc(uid + '_' + lessonSlug).set(answers);
+    if (classId) answers._class = classId;
+    return answerRef(uid, lessonSlug, classId).set(answers);
   }
 
   function getUserAnswers(uid) {
@@ -113,9 +114,49 @@
     });
   }
 
+  function answerRef(uid, slug, classId) {
+    return classId ? db.collection('classAnswers').doc(classId + '_' + uid + '_' + slug)
+      : db.collection('answers').doc(uid + '_' + slug);
+  }
+
+  function rows(snapshot) {
+    return snapshot.docs.map(function(doc) { return Object.assign({}, doc.data(), { id: doc.id }); });
+  }
+  function getClasses(user, profile) {
+    var query = db.collection('classes');
+    if (profile.role === 'leader') query = query.where('leaderUid', '==', user.uid);
+    else if (profile.role !== 'admin') query = query.where('memberUids', 'array-contains', user.uid);
+    return query.get().then(rows);
+  }
+  function getClass(id) {
+    return db.collection('classes').doc(id).get().then(function(doc) {
+      if (!doc.exists) throw new Error('class-not-found');
+      return Object.assign({}, doc.data(), { id: doc.id });
+    });
+  }
+  function saveClass(id, data) {
+    var ref = id ? db.collection('classes').doc(id) : db.collection('classes').doc();
+    data.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+    if (!id) data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+    return ref.set(data, { merge: true }).then(function() { return ref.id; });
+  }
+  function getStudents() {
+    return db.collection('users').where('role', '==', 'user').get().then(rows);
+  }
+  function getClassAnswers(classId, uid) {
+    var query = db.collection('classAnswers').where('_class', '==', classId);
+    if (uid) query = query.where('_uid', '==', uid);
+    return query.get().then(rows);
+  }
+
   // ========== Expose API ==========
 
   window.BibleDB = {
+    getClasses: getClasses,
+    getClass: getClass,
+    saveClass: saveClass,
+    getStudents: getStudents,
+    getClassAnswers: getClassAnswers,
     auth: auth,
     db: db,
     login: login,

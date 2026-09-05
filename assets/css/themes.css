@@ -473,3 +473,10 @@
   font-weight: 700;
 }
 .theme-card.active .theme-card-check { display: flex; }
+
+/* Navigation and tables share the same readable controls in every theme. */
+[data-theme="original"] .btn-primary,
+[data-theme="original"] .btn-accent { color:#172b46; }
+[data-theme="covenant"] .admin-table th { background:#202940; color:var(--text); }
+[data-theme="papyrus"] .main-nav a { font-size:12px; letter-spacing:.06em; }
+@media(max-width:600px) { [data-theme="papyrus"] .main-nav a { font-size:14px; } }

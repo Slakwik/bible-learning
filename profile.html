@@ -21,7 +21,7 @@ title: "Личный кабинет"
       <!-- Профиль -->
       <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 28px;">
         <h2 style="font-size: 1.4rem; margin-bottom: 16px;">Профиль</h2>
-        <dl style="display: grid; grid-template-columns: 140px 1fr; gap: 12px 24px; align-items: baseline;">
+        <dl style="display: grid; grid-template-columns: minmax(80px, 140px) minmax(0, 1fr); gap: 12px 24px; align-items: baseline;">
           <dt style="color: var(--text-light); font-size: 14px;">Имя</dt>
           <dd id="profName" style="font-weight: 500;"></dd>
           <dt style="color: var(--text-light); font-size: 14px;">Email</dt>
@@ -138,7 +138,7 @@ title: "Личный кабинет"
     document.getElementById('profileApp').style.display = '';
     document.getElementById('profName').textContent = profile.name || '—';
     document.getElementById('profEmail').textContent = profile.email || user.email || '—';
-    document.getElementById('profRole').textContent = profile.role === 'admin' ? 'Администратор' : 'Ученик';
+    document.getElementById('profRole').textContent = profile.role === 'admin' ? 'Администратор' : profile.role === 'leader' ? 'Ведущий' : 'Ученик';
     var current = (profile && profile.theme) || BibleTheme.get();
     renderThemePicker(current, user.uid);
   });

@@ -7,7 +7,7 @@ function setup(getAnswers) {
   let ready; const handlers={},writes=[];
   const ta={value:'',disabled:false,getAttribute(){return 'q1';},addEventListener(n,fn){handlers[n]=fn;}};
   const els={lessonContent:{style:{},getAttribute(){return 'lesson-1';},querySelectorAll(){return [ta];}},authGate:{style:{}},lessonActions:{style:{}},saveAnswers:{addEventListener(n,fn){handlers.save=fn;}},saveStatus:{style:{}}};
-  const ctx={document:{getElementById(id){return els[id];}},BibleAuth:{onReady(fn){ready=fn;}},BibleDB:{getAnswers,saveAnswers(uid,slug,data){writes.push({uid,slug,data});return Promise.resolve();}},setTimeout(){},clearTimeout(){}};
+  const ctx={window:{location:{search:''}},URLSearchParams,document:{getElementById(id){return els[id];}},BibleAuth:{onReady(fn){ready=fn;}},BibleDB:{getAnswers,saveAnswers(uid,slug,data){writes.push({uid,slug,data});return Promise.resolve();}},setTimeout(){},clearTimeout(){}};
   vm.runInNewContext(fs.readFileSync('assets/js/app.js','utf8'),ctx);
   return {els,ta,handlers,writes,ready};
 }

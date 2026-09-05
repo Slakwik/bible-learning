@@ -43,6 +43,7 @@
         renderUsers();
         renderProgressSelect();
         renderLessonStats();
+        renderLeaderTree();
       });
     }
 
@@ -55,7 +56,7 @@
         tr.innerHTML =
           '<td>' + escHtml(u.name) + '</td>' +
           '<td>' + escHtml(u.email) + '</td>' +
-          '<td>' + (u.role === 'admin' ? 'Админ' : 'Ученик') + '</td>' +
+          '<td>' + (u.role === 'admin' ? 'Админ' : u.role === 'leader' ? 'Ведущий' : 'Ученик') + '</td>' +
           '<td>' +
             '<button class="btn btn-outline btn-sm edit-user" data-uid="' + u.uid + '">Изменить</button> ' +
             '<button class="btn btn-danger btn-sm delete-user" data-uid="' + u.uid + '"' + (u.uid === BibleDB.getCurrentUser().uid ? ' disabled' : '') + '>Удалить профиль</button>' +
@@ -197,7 +198,7 @@
       var select = document.getElementById('progressUser');
       select.innerHTML = '<option value="">— выберите —</option>';
       allUsers.forEach(function(u) {
-        if (u.role !== 'admin') {
+        if (u.role === 'user') {
           var opt = document.createElement('option');
           opt.value = u.uid;
           opt.textContent = u.name + ' (' + u.email + ')';
@@ -256,6 +257,41 @@
         });
       }).catch(showError);
     }
+
+    function treeNode(tag, text, cls) {
+      var node = document.createElement(tag); if (text != null) node.textContent = text; if (cls) node.className = cls; return node;
+    }
+    function renderLeaderTree() {
+      var root = document.getElementById('leaderTree'); root.textContent = 'Загрузка классов…';
+      return BibleDB.getClasses(BibleDB.getCurrentUser(), { role:'admin' }).then(function(classes) {
+        root.replaceChildren();
+        var leaders = allUsers.filter(function(u) { return u.role === 'leader' || classes.some(function(c) { return c.leaderUid === u.uid; }); });
+        classes.forEach(function(c) { if (!leaders.some(function(u) { return u.uid === c.leaderUid; })) leaders.push({uid:c.leaderUid,name:c.leaderName,role:'missing'}); });
+        if (!leaders.length) { root.textContent = 'Ведущих пока нет. Назначьте роль «Ведущий» в карточке пользователя.'; return; }
+        var list = treeNode('ul', null, 'leader-tree'); root.appendChild(list);
+        leaders.sort(function(a,b) { return (a.name || '').localeCompare(b.name || '', 'ru'); }).forEach(function(leader) {
+          var owned = classes.filter(function(c) { return c.leaderUid === leader.uid; });
+          var item = treeNode('li'), details = treeNode('details'); details.open = true;
+          var summary = treeNode('summary', leader.name || leader.email || leader.uid);
+          summary.appendChild(treeNode('span', ' · классов: ' + owned.length + (leader.role === 'user' || leader.role === 'missing' ? ' · требуется назначить ведущего' : ''), 'tree-meta'));
+          details.appendChild(summary);
+          var children = treeNode('ul');
+          if (!owned.length) children.appendChild(treeNode('li', 'Классов пока нет', 'tree-meta'));
+          owned.sort(function(a,b) { return a.name.localeCompare(b.name,'ru'); }).forEach(function(c) {
+            var row = treeNode('li'), branch = treeNode('details'), title = treeNode('summary', c.name);
+            title.appendChild(treeNode('span', ' · учеников: ' + c.memberUids.length + (c.archived ? ' · Архив' : ''), 'tree-meta')); branch.appendChild(title);
+            var meta = treeNode('p', ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'][c.weekday] + ', ' + c.time + ' МСК · ' + 'уроков: ' + c.lessonSlugs.length, 'tree-meta'); branch.appendChild(meta);
+            var link = treeNode('a','Открыть класс →'); link.href = '/classes/?id=' + encodeURIComponent(c.id); branch.appendChild(link);
+            var members = treeNode('ul');
+            if (!c.memberUids.length) members.appendChild(treeNode('li','Ученики пока не добавлены','tree-meta'));
+            c.memberUids.forEach(function(uid) { var student = allUsers.find(function(u) { return u.uid === uid; }); members.appendChild(treeNode('li',student ? student.name + ' · ' + student.email : 'Участник ' + uid)); });
+            branch.appendChild(members); row.appendChild(branch); children.appendChild(row);
+          });
+          details.appendChild(children); item.appendChild(details); list.appendChild(item);
+        });
+      }).catch(function(err) { root.textContent = 'Не удалось загрузить дерево. Нажмите «Обновить», чтобы повторить.'; });
+    }
+    document.getElementById('refreshLeaderTree').addEventListener('click', function() { loadUsers().catch(showError); });
 
     // Load data
     loadUsers().catch(showError);
