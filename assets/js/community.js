@@ -6,13 +6,15 @@
   function stamp(v) { return v && v.toMillis ? v.toMillis() : 0; }
   function announcements(root,classId,canManage) {
     root.replaceChildren(); var generation={};root._newsGeneration=generation;
-    root.classList.add('community-section');if(!root.hasAttribute('data-announcements-page'))root.appendChild(el('h2',classId?'Объявления класса':'Общие объявления'));
-    var status=el('p','Загрузка…');status.setAttribute('role','status');root.appendChild(status);
+    root.classList.add('community-section');
+    var heading=el('div',null,'community-heading');root.appendChild(heading);
+    if(!root.hasAttribute('data-announcements-page'))heading.appendChild(el('h2',classId?'Объявления класса':'Общие объявления'));
+    var status=el('p','Загрузка…','community-status');status.setAttribute('role','status');root.appendChild(status);
     var list=el('div');root.appendChild(list);
-    var editor=el('form',null,'community-editor');editor.hidden=true;root.appendChild(editor);
+    var editor=el('form',null,'community-editor');editor.hidden=true;root.insertBefore(editor,list);
     var title=field(editor,'Заголовок','text',120),body=field(editor,'Текст объявления','textarea',4000),save=el('button','Опубликовать','btn btn-primary btn-sm');save.type='submit';editor.appendChild(save);
     editor.appendChild(button('Отмена',function(){editor.hidden=true;})); var editing=null;
-    if(canManage) root.insertBefore(button('Написать объявление',function(){editing=null;editor.reset();save.textContent='Опубликовать';editor.hidden=false;title.focus();}),list);
+    if(canManage) heading.appendChild(button('Написать объявление',function(){editing=null;editor.reset();save.textContent='Опубликовать';editor.hidden=false;title.focus();}));
     function load() {
       return BibleDB.getAnnouncements(classId).then(function(items){
         if(root._newsGeneration!==generation)return;

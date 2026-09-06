@@ -14,6 +14,13 @@
 .home-scripture blockquote { font-family:var(--font-heading); font-size:1.15rem; line-height:1.6; margin:0; border:0; padding:0; background:none; color:#fff; }
 .home-scripture cite { display:block; font-size:.8rem; font-style:normal; margin-top:16px; color:#ead7af; }
 .home-news:empty { display:none; }
+.home-news.community-section { margin:0 0 8px; padding:28px; border:1px solid var(--border); border-radius:var(--radius); background:var(--bg-card); }
+.home-news h2 { font-family:var(--font-heading); font-size:1.6rem; }
+.home-news .community-heading .btn { min-height:42px; padding:9px 16px; font-size:.85rem; }
+.home-news .community-card { background:transparent; border:0; border-top:1px solid var(--border); border-radius:0; padding:20px 0 0; margin:20px 0 0; }
+.home-news .community-card h3 { font-size:1.2rem; }
+.home-news .community-status { font-size:.95rem; }
+@media(max-width:600px) { .home-news.community-section { padding:20px; } }
 .home-section { padding-top:40px; padding-bottom:24px; }
 .home-section h2 { font-family:var(--font-heading); font-size:clamp(1.8rem,2.7vw,2.4rem); line-height:1.25; letter-spacing:-.02em; }
 .home-section-heading { display:flex; justify-content:space-between; gap:20px; align-items:end; margin-bottom:28px; }
