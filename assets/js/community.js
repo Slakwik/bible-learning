@@ -6,7 +6,7 @@
   function stamp(v) { return v && v.toMillis ? v.toMillis() : 0; }
   function announcements(root,classId,canManage) {
     root.replaceChildren(); var generation={};root._newsGeneration=generation;
-    root.classList.add('community-section');root.appendChild(el('h2',classId?'Объявления класса':'Общие объявления'));
+    root.classList.add('community-section');if(!root.hasAttribute('data-announcements-page'))root.appendChild(el('h2',classId?'Объявления класса':'Общие объявления'));
     var status=el('p','Загрузка…');status.setAttribute('role','status');root.appendChild(status);
     var list=el('div');root.appendChild(list);
     var editor=el('form',null,'community-editor');editor.hidden=true;root.appendChild(editor);
@@ -51,5 +51,5 @@
     load();
   }
   window.BibleCommunity={announcements:announcements,invitations:invitations};
-  BibleAuth.onReady(function(user,profile){document.querySelectorAll('[data-global-announcements]').forEach(function(root){if(user){announcements(root,null,profile.role==='admin');}else{root._newsGeneration={};root.replaceChildren();}});});
+  BibleAuth.onReady(function(user,profile){document.querySelectorAll('[data-global-announcements]').forEach(function(root){if(user){announcements(root,null,profile.role==='admin');}else{root._newsGeneration={};root.replaceChildren();if(root.hasAttribute('data-announcements-page')){var login=el('a','Войдите, чтобы прочитать объявления.');login.href='/login/';root.appendChild(login);}}});});
 })();
