@@ -73,7 +73,7 @@
 
   function resetPassword(email) {
     auth.languageCode = 'ru';
-    return auth.sendPasswordResetEmail(email, { url: window.location.origin + '/login/' });
+    return auth.sendPasswordResetEmail(email);
   }
 
   function restoreUserProfile(uid, data) {
