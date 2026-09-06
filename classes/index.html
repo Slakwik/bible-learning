@@ -6,7 +6,27 @@ extra_js:
 ---
 <link rel="stylesheet" href="{{ '/assets/css/classes.css' | relative_url }}?v={{ site.time | date: "%s" }}">
 <section class="container classes-page">
-  <div class="class-heading"><div><h1>Классы</h1><p>Встречи, программа и участники вашей группы.</p></div><button id="newClass" class="btn btn-primary" hidden>Создать класс</button></div>
+  <div id="classesHeading" class="class-heading"><div><h1>Классы</h1><p>Встречи, программа и участники вашей группы.</p></div><button id="newClass" class="btn btn-primary" hidden>Создать класс</button></div>
+  <section id="classesGuest" class="classes-welcome" hidden aria-labelledby="classesWelcomeTitle">
+    <div class="classes-welcome-main">
+      <p class="classes-eyebrow">Занятия в классе</p>
+      <h1 id="classesWelcomeTitle">Изучайте Библию.<br>Обсуждайте вместе.</h1>
+      <p class="classes-intro">Своя группа, внимательное чтение и живой разговор. Здесь собраны уроки, расписание и объявления вашего класса.</p>
+      <a class="classes-catalog-link" href="/lessons/">Посмотреть все курсы <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="classes-signin">
+      <svg class="classes-signin-icon" width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M20 10c-5-3-10-3-15-2v24c5-1 10-1 15 2 5-3 10-3 15-2V8c-5-1-10-1-15 2Z"/><path d="M20 10v24M10 15h5M10 20h5M25 15h5M25 20h5"/></svg>
+      <h2>Ваш класс — здесь</h2>
+      <p>Войдите, чтобы открыть программу занятий и продолжить изучение.</p>
+      <a href="/login/" class="btn btn-primary classes-signin-button">Войти в аккаунт <span aria-hidden="true">→</span></a>
+      <div class="classes-invite-note"><h3>Впервые на сайте?</h3><p>Попросите ведущего пригласить вас в класс. По ссылке из письма вы сможете самостоятельно задать пароль.</p></div>
+    </div>
+    <dl class="classes-benefits">
+      <div><dt><span aria-hidden="true">01</span> Понятный план</dt><dd>Уроки в нужном порядке и время следующей встречи.</dd></div>
+      <div><dt><span aria-hidden="true">02</span> Вдумчивое изучение</dt><dd>Читайте отрывки и сохраняйте ответы на вопросы к уроку.</dd></div>
+      <div><dt><span aria-hidden="true">03</span> На связи с группой</dt><dd>Объявления ведущего и подготовка к общему обсуждению.</dd></div>
+    </dl>
+  </section>
   <section data-global-announcements></section>
   <p id="classesStatus" role="status">Загрузка классов…</p>
   <div id="classesList" class="classes-grid"></div>

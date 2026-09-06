@@ -26,7 +26,10 @@
     user = u; profile = p;
     byId('classesList').replaceChildren(); byId('classDetail').hidden = true; byId('classEditor').hidden = true;
     byId('newClass').hidden = !u || !manager();
-    if (!u) { status('Войдите на сайт, чтобы увидеть свои классы.'); var a = el('a', 'Войти', 'btn btn-primary'); a.href = '/login/'; byId('classesList').appendChild(a); return; }
+    byId('classesGuest').hidden = !!u;
+    byId('classesHeading').hidden = !u;
+    byId('classesList').hidden = !u;
+    if (!u) { status(''); return; }
     if (!initialized) { bind(); initialized = true; }
     refresh();
   });
