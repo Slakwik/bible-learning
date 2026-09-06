@@ -4,7 +4,7 @@
   var courseNames = {james:'Послание Иакова',ephesians:'Послание к Ефесянам',galatians:'Послание к Галатам',philippians:'Послание к Филиппийцам',proverbs:'Мудрость Соломона','christian-life':'Жизнь христианина',deuteronomy:'Второзаконие',mark:'Евангелие от Марка',genesis1:'Бытие (часть 1)',genesis2:'Бытие (часть 2)',joshua:'Иисус Навин','amos-isaiah':'Амос и Исаия',daniel:'Даниил',acts1:'Деяния (часть 1)',acts2:'Деяния (часть 2)',corinthians1:'1 Коринфянам',corinthians2:'2 Коринфянам',thessalonians:'1–2 Фессалоникийцам','first-john':'Послание 1 Иоанна',prayer:'Если будете молиться','bible-book':'Библия: Божья удивительная книга'};
   var lessons = {};
   catalog.forEach(function(l) { lessons[l.slug] = l; });
-  var user, profile, students = [], leaders = [], classes = [], editingId = null;
+  var user, profile, students = [], leaders = [], classes = [], editingId = null, originalMembers = [];
   var selectedLessons = [], selectedMembers = [], initialized = false;
   var days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
   function byId(id) { return document.getElementById(id); }
@@ -67,6 +67,10 @@
     card.appendChild(el('p', 'Первая встреча: ' + c.startDate.split('-').reverse().join('.')));
     if (c.place) card.appendChild(el('p', 'Место: ' + c.place));
     if (c.description) card.appendChild(el('p', c.description));
+    if (window.BibleCommunity) {
+      var news = el('section'); card.appendChild(news); BibleCommunity.announcements(news, c.id, manages(c) && !c.archived);
+      if (manages(c) && !c.archived) { var invites = el('section'); card.appendChild(invites); BibleCommunity.invitations(invites, c.id); }
+    }
     if (c.archived) card.appendChild(el('p', 'Класс завершён. Ответы доступны для просмотра; новые ответы не принимаются.', 'class-muted'));
     card.appendChild(el('h3', 'Программа класса'));
     var list = el('ol', null, 'class-lessons');
@@ -106,6 +110,7 @@
       if (!user || user.uid !== uid) return;
       students = data[0]; leaders = data[1] ? data[1].filter(function(u) { return u.role === 'leader' || u.role === 'admin'; }).map(function(u) { return Object.assign({}, u, { id:u.uid }); }) : [{ id:user.uid, name:profile.name }];
       editingId = c ? c.id : null; selectedLessons = c ? c.lessonSlugs.slice() : []; selectedMembers = c ? c.memberUids.slice() : [];
+      originalMembers = selectedMembers.slice();
       byId('classForm').reset(); byId('classFormError').textContent = '';
       byId('classEditorTitle').textContent = c ? 'Изменить класс' : 'Новый класс';
       byId('className').value = c ? c.name : '';
@@ -184,7 +189,7 @@
         timezone:'Europe/Moscow', place:byId('classPlace').value.trim(), description:byId('classDescription').value.trim(),
         lessonSlugs:selectedLessons.slice(), memberUids:selectedMembers.slice(), archived:byId('classArchived').checked };
       var submit = byId('classForm').querySelector('[type=submit]'); submit.disabled = true;
-      BibleDB.saveClass(editingId, data).then(function(id) {
+      BibleDB.saveClass(editingId, data, originalMembers).then(function(id) {
         byId('classEditor').hidden = true; history.replaceState(null, '', '?id=' + encodeURIComponent(id)); return refresh();
       }).catch(function() { err.textContent = 'Не удалось сохранить класс. Проверьте соединение и права ведущего, затем повторите попытку.'; }).finally(function() { submit.disabled = false; });
     });

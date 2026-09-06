@@ -145,10 +145,22 @@
       return Object.assign({}, doc.data(), { id: doc.id });
     });
   }
-  function saveClass(id, data) {
+  function saveClass(id, data, originalMembers) {
     var ref = id ? db.collection('classes').doc(id) : db.collection('classes').doc();
     data.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
     if (!id) data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+    if (id && originalMembers) return db.runTransaction(function(tx) {
+      return tx.get(ref).then(function(snapshot) {
+        if (!snapshot.exists) throw new Error('class-not-found');
+        var removed = originalMembers.filter(function(uid) { return data.memberUids.indexOf(uid) < 0; });
+        var added = data.memberUids.filter(function(uid) { return originalMembers.indexOf(uid) < 0; });
+        var members = snapshot.data().memberUids.filter(function(uid) { return removed.indexOf(uid) < 0; });
+        added.forEach(function(uid) { if (members.indexOf(uid) < 0) members.push(uid); });
+        if (members.length > 200) throw new Error('class-full');
+        tx.set(ref, Object.assign({}, data, {memberUids:members}), {merge:true});
+        return ref.id;
+      });
+    });
     return ref.set(data, { merge: true }).then(function() { return ref.id; });
   }
   function getStudents() {
@@ -160,9 +172,68 @@
     return query.get().then(rows);
   }
 
+  function announcementCollection(classId) {
+    return classId ? db.collection('classes').doc(classId).collection('announcements') : db.collection('announcements');
+  }
+  function getAnnouncements(classId) { return announcementCollection(classId).get().then(rows); }
+  function saveAnnouncement(classId, id, data) {
+    var ref = id ? announcementCollection(classId).doc(id) : announcementCollection(classId).doc();
+    var payload = Object.assign({}, data, {updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    if (!id) { payload.createdAt = firebase.firestore.FieldValue.serverTimestamp(); payload.authorUid = auth.currentUser.uid; }
+    return ref.set(payload, {merge:true});
+  }
+  function invitationRef(classId, email) { return db.collection('classes').doc(classId).collection('invitations').doc(email.trim().toLowerCase()); }
+  function getInvitations(classId) { return db.collection('classes').doc(classId).collection('invitations').get().then(rows); }
+  function sendInvitation(classId, email, name) {
+    email = email.trim().toLowerCase();
+    var ref = invitationRef(classId,email);
+    return ref.set({email:email, name:name.trim(), status:'pending', createdBy:auth.currentUser.uid,
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp(), expiresAt:firebase.firestore.Timestamp.fromMillis(Date.now()+7*86400000)})
+      .then(function() {
+        auth.languageCode = 'ru';
+        return auth.sendSignInLinkToEmail(email,{url:window.location.origin+'/invite/?class='+encodeURIComponent(classId),handleCodeInApp:true});
+      });
+  }
+  function revokeInvitation(classId,email) { return invitationRef(classId,email).update({status:'revoked',updatedAt:firebase.firestore.FieldValue.serverTimestamp()}); }
+  function checkInvitation(classId) {
+    var current = auth.currentUser;
+    if (!current || !current.emailVerified) return Promise.reject(new Error('Подтвердите email по ссылке из письма.'));
+    return invitationRef(classId,current.email).get().then(function(snapshot) {
+      if (!snapshot.exists) throw new Error('Приглашение для этого email не найдено.');
+      var invitation = snapshot.data();
+      if (invitation.status !== 'pending' || invitation.expiresAt.toMillis() <= Date.now()) throw new Error('Приглашение истекло или уже использовано. Попросите ведущего отправить новое.');
+      return getClass(classId).then(function(c) {
+        if (c.archived) throw new Error('Этот класс закрыт.');
+        if (c.memberUids.length >= 200 && c.memberUids.indexOf(current.uid) < 0) throw new Error('Класс заполнен. Обратитесь к ведущему.');
+        return invitation;
+      });
+    });
+  }
+  function acceptInvitation(classId) {
+    var current = auth.currentUser;
+    if (!current || !current.emailVerified) return Promise.reject(new Error('Подтвердите email по ссылке из письма.'));
+    var ref = invitationRef(classId,current.email), classRef = db.collection('classes').doc(classId);
+    return db.runTransaction(function(tx) {
+      return Promise.all([tx.get(ref),tx.get(classRef)]).then(function(snaps) {
+        if (!snaps[0].exists) throw new Error('Приглашение для этого email не найдено.');
+        var invitation = snaps[0].data();
+        if (invitation.status !== 'pending' || invitation.expiresAt.toMillis() <= Date.now()) throw new Error('Приглашение истекло или уже использовано. Попросите ведущего отправить новое.');
+        if (!snaps[1].exists || snaps[1].data().archived) throw new Error('Этот класс закрыт.');
+        var members = snaps[1].data().memberUids.slice();
+        if (members.indexOf(current.uid)<0) members.push(current.uid);
+        if (members.length>200) throw new Error('Класс заполнен. Обратитесь к ведущему.');
+        tx.update(classRef,{memberUids:members,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+        tx.update(ref,{status:'accepted',acceptedUid:current.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+        return invitation;
+      });
+    });
+  }
+
   // ========== Expose API ==========
 
   window.BibleDB = {
+    getAnnouncements:getAnnouncements, saveAnnouncement:saveAnnouncement,
+    getInvitations:getInvitations, sendInvitation:sendInvitation, revokeInvitation:revokeInvitation, checkInvitation:checkInvitation, acceptInvitation:acceptInvitation,
     getClasses: getClasses,
     getClass: getClass,
     saveClass: saveClass,

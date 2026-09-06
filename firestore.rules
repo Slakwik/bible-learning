@@ -35,8 +35,73 @@ service cloud.firestore {
         && c.memberUids.toSet().size() == c.memberUids.size()
         && c.archived is bool && c.createdAt is timestamp && c.updatedAt == request.time;
     }
+    function verifiedEmail() {
+      return signedIn() && request.auth.token.email_verified == true && request.auth.token.email is string;
+    }
+    function invited(classId) {
+      let path = /databases/$(database)/documents/classes/$(classId)/invitations/$(request.auth.token.email.lower());
+      let c = get(/databases/$(database)/documents/classes/$(classId)).data;
+      return verifiedEmail() && exists(path) && get(path).data.status == 'pending'
+        && get(path).data.expiresAt > request.time && !c.archived
+        && (get(/databases/$(database)/documents/users/$(get(path).data.createdBy)).data.role == 'admin'
+          || (c.leaderUid == get(path).data.createdBy
+            && get(/databases/$(database)/documents/users/$(c.leaderUid)).data.role == 'leader'));
+    }
+    function validAnnouncement(a) {
+      return a.keys().hasOnly(['title','body','archived','authorUid','createdAt','updatedAt'])
+        && a.title is string && a.title.size() > 0 && a.title.size() <= 120
+        && a.body is string && a.body.size() > 0 && a.body.size() <= 4000
+        && a.archived is bool && a.authorUid is string && a.createdAt is timestamp && a.updatedAt == request.time;
+    }
+    match /announcements/{id} {
+      allow read: if signedIn();
+      allow create: if isAdmin() && validAnnouncement(request.resource.data)
+        && request.resource.data.authorUid == request.auth.uid && request.resource.data.createdAt == request.time;
+      allow update: if isAdmin() && validAnnouncement(request.resource.data)
+        && request.resource.data.authorUid == resource.data.authorUid && request.resource.data.createdAt == resource.data.createdAt;
+    }
     match /classes/{classId} {
       allow read: if classAccess(resource.data);
+      allow get: if verifiedEmail() && invited(classId);
+      allow update: if verifiedEmail() && invited(classId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberUids','updatedAt'])
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.memberUids is list && request.resource.data.memberUids.size() <= 200
+        && request.resource.data.memberUids.toSet() == resource.data.memberUids.toSet().union([request.auth.uid].toSet())
+        && request.resource.data.memberUids.size() == request.resource.data.memberUids.toSet().size()
+        && getAfter(/databases/$(database)/documents/classes/$(classId)/invitations/$(request.auth.token.email.lower())).data.status == 'accepted'
+        && getAfter(/databases/$(database)/documents/classes/$(classId)/invitations/$(request.auth.token.email.lower())).data.acceptedUid == request.auth.uid;
+      match /announcements/{id} {
+        function owner() { return managesClass(get(/databases/$(database)/documents/classes/$(classId)).data)
+          && !get(/databases/$(database)/documents/classes/$(classId)).data.archived; }
+        allow read: if classAccess(get(/databases/$(database)/documents/classes/$(classId)).data);
+        allow create: if owner() && validAnnouncement(request.resource.data)
+          && request.resource.data.authorUid == request.auth.uid && request.resource.data.createdAt == request.time;
+        allow update: if owner() && validAnnouncement(request.resource.data)
+          && request.resource.data.authorUid == resource.data.authorUid && request.resource.data.createdAt == resource.data.createdAt;
+      }
+      match /invitations/{email} {
+        function owner() { return managesClass(get(/databases/$(database)/documents/classes/$(classId)).data)
+          && !get(/databases/$(database)/documents/classes/$(classId)).data.archived; }
+        function recipient() { return verifiedEmail() && request.auth.token.email.lower() == email; }
+        function validInvite(i) {
+          return i.keys().hasOnly(['email','name','status','createdBy','updatedAt','expiresAt'])
+            && i.email == email && i.email is string && i.email.size() <= 254 && i.email == i.email.lower()
+            && i.name is string && i.name.size() > 0 && i.name.size() <= 120 && i.status == 'pending'
+            && i.createdBy == request.auth.uid && i.updatedAt == request.time
+            && i.expiresAt is timestamp && i.expiresAt > request.time && i.expiresAt <= request.time + duration.value(8,'d');
+        }
+        allow read: if owner() || recipient();
+        allow create: if owner() && validInvite(request.resource.data);
+        allow update: if owner() && (validInvite(request.resource.data)
+          || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','updatedAt'])
+            && request.resource.data.status == 'revoked' && request.resource.data.updatedAt == request.time));
+        allow update: if recipient() && invited(classId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','acceptedUid','updatedAt'])
+          && request.resource.data.status == 'accepted' && request.resource.data.acceptedUid == request.auth.uid
+          && request.resource.data.updatedAt == request.time
+          && request.auth.uid in getAfter(/databases/$(database)/documents/classes/$(classId)).data.memberUids;
+      }
       allow create: if validClass(request.resource.data)
         && request.resource.data.createdAt == request.time
         && (isAdmin() || (isLeader() && request.resource.data.leaderUid == request.auth.uid))

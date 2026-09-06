@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "test": "node --test tests/*.test.cjs",
-    "test:rules": "firebase emulators:exec --only firestore --project demo-bible-classes \"node --test tests/firestore.rules.cjs\""
+    "test:rules": "firebase emulators:exec --only firestore --project demo-bible-classes \"node --test tests/firestore.rules.cjs\"",
+    "test:invitations": "firebase emulators:exec --only firestore,auth --project demo-bible-classes \"node --test tests/invitations.integration.cjs\""
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^5.0.2",

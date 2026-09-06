@@ -1,7 +1,8 @@
+const assert=require('node:assert/strict');
 const {test,before,after,beforeEach}=require('node:test');
 const fs=require('node:fs');
 const {initializeTestEnvironment,assertSucceeds,assertFails}=require('@firebase/rules-unit-testing');
-const {doc,setDoc,getDoc,updateDoc,deleteDoc,collection,query,where,getDocs,serverTimestamp,Timestamp}=require('firebase/firestore');
+const {doc,setDoc,getDoc,updateDoc,deleteDoc,collection,query,where,getDocs,serverTimestamp,Timestamp,writeBatch}=require('firebase/firestore');
 let env;
 const db=uid=>env.authenticatedContext(uid).firestore();
 const makeClass=(leaderUid='leader-a',memberUids=['student-a'])=>({name:'Воскресный класс',leaderUid,leaderName:'Ведущий',weekday:0,time:'11:00',duration:60,startDate:'2026-09-06',timezone:'Europe/Moscow',place:'Зал',description:'',lessonSlugs:['ephesians-2'],memberUids,archived:false,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
@@ -102,4 +103,56 @@ test('missing own class answer can be loaded before first save',async()=>{
 });
 test('class deletion is disabled; archive preserves answers',async()=>{
  await assertFails(deleteDoc(doc(db('admin'),'classes','class-a')));
+});
+
+const invitation=(patch={})=>({email:'new@example.invalid',name:'Новый ученик',status:'pending',createdBy:'leader-a',updatedAt:serverTimestamp(),expiresAt:Timestamp.fromMillis(Date.now()+86400000),...patch});
+const inviteRef=d=>doc(d,'classes/class-a/invitations/new@example.invalid');
+const guest=(email='new@example.invalid',verified=true)=>env.authenticatedContext('new-student',{email,email_verified:verified}).firestore();
+async function seedInvite(patch={}) {await setDoc(inviteRef(db('leader-a')),invitation(patch));}
+function claim(d,extra={}) {const b=writeBatch(d);b.update(doc(d,'classes/class-a'),{memberUids:['student-a','new-student'],updatedAt:serverTimestamp(),...extra});b.update(inviteRef(d),{status:'accepted',acceptedUid:'new-student',updatedAt:serverTimestamp()});return b.commit();}
+test('only admin publishes global announcements and only signed-in users read',async()=>{
+ const a={title:'Встреча',body:'В воскресенье',archived:false,authorUid:'admin',createdAt:serverTimestamp(),updatedAt:serverTimestamp()};
+ await assertSucceeds(setDoc(doc(db('admin'),'announcements/one'),a));
+ await assertSucceeds(getDoc(doc(db('student-a'),'announcements/one')));
+ await assertFails(getDoc(doc(env.unauthenticatedContext().firestore(),'announcements/one')));
+ await assertFails(setDoc(doc(db('leader-a'),'announcements/two'),{...a,authorUid:'leader-a'}));
+ await assertFails(updateDoc(doc(db('student-a'),'announcements/one'),{body:'Changed',updatedAt:serverTimestamp()}));
+});
+test('class announcements stay within class and can be archived by owner',async()=>{
+ const ref=d=>doc(d,'classes/class-a/announcements/one');
+ await assertSucceeds(setDoc(ref(db('leader-a')),{title:'Урок',body:'Подготовьтесь',archived:false,authorUid:'leader-a',createdAt:serverTimestamp(),updatedAt:serverTimestamp()}));
+ await assertSucceeds(getDoc(ref(db('student-a'))));await assertFails(getDoc(ref(db('student-b'))));
+ await assertFails(updateDoc(ref(db('leader-b')),{body:'Changed',updatedAt:serverTimestamp()}));
+ await assertSucceeds(updateDoc(ref(db('leader-a')),{archived:true,updatedAt:serverTimestamp()}));
+ await assertFails(updateDoc(ref(db('leader-a')),{authorUid:'admin',updatedAt:serverTimestamp()}));
+});
+test('only class manager creates invitations',async()=>{
+ await assertSucceeds(setDoc(inviteRef(db('leader-a')),invitation()));
+ await assertFails(setDoc(inviteRef(db('leader-b')),invitation({createdBy:'leader-b'})));
+ await assertFails(setDoc(inviteRef(db('student-a')),invitation({createdBy:'student-a'})));
+});
+test('verified recipient accepts invitation atomically and can read class',async()=>{
+ await seedInvite();await assertSucceeds(getDoc(doc(guest(),'classes/class-a')));await assertSucceeds(claim(guest()));
+ assert.equal((await getDoc(inviteRef(db('leader-a')))).data().acceptedUid,'new-student');
+ await assertSucceeds(getDoc(doc(guest(),'classes/class-a')));
+});
+test('wrong or unverified mailbox cannot read invitation or accept it',async()=>{
+ await seedInvite();for(const d of [guest('other@example.invalid'),guest('new@example.invalid',false)]){
+ await assertFails(getDoc(inviteRef(d)));await assertFails(getDoc(doc(d,'classes/class-a')));await assertFails(claim(d));}
+});
+test('invitation cannot authorize extra changes or unilateral membership',async()=>{
+ await seedInvite();await assertFails(claim(guest(),{name:'Hijack'}));
+ await assertFails(claim(guest(),{memberUids:['student-a','new-student','attacker']}));
+ await assertFails(updateDoc(doc(guest(),'classes/class-a'),{memberUids:['student-a','new-student'],updatedAt:serverTimestamp()}));
+});
+test('revoked and expired invitations cannot be accepted',async()=>{
+ await seedInvite();await updateDoc(inviteRef(db('leader-a')),{status:'revoked',updatedAt:serverTimestamp()});await assertFails(claim(guest()));
+ await env.withSecurityRulesDisabled(async c=>{await setDoc(inviteRef(c.firestore()),invitation({expiresAt:Timestamp.fromMillis(Date.now()-1000)}));});await assertFails(claim(guest()));
+});
+test('accepted invitation cannot rejoin after removal',async()=>{
+ await seedInvite();await assertSucceeds(claim(guest()));await updateDoc(doc(db('leader-a'),'classes/class-a'),{memberUids:['student-a'],updatedAt:serverTimestamp()});await assertFails(claim(guest()));
+});
+test('archived class and demoted inviter invalidate pending invitations',async()=>{
+ await seedInvite();await updateDoc(doc(db('leader-a'),'classes/class-a'),{archived:true,updatedAt:serverTimestamp()});await assertFails(claim(guest()));
+ await updateDoc(doc(db('leader-a'),'classes/class-a'),{archived:false,updatedAt:serverTimestamp()});await updateDoc(doc(db('admin'),'users/leader-a'),{role:'user'});await assertFails(claim(guest()));
 });
