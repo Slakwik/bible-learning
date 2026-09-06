@@ -59,7 +59,7 @@
           '<td>' + (u.role === 'admin' ? 'Админ' : u.role === 'leader' ? 'Ведущий' : 'Ученик') + '</td>' +
           '<td>' +
             '<button class="btn btn-outline btn-sm edit-user" data-uid="' + u.uid + '">Изменить</button> ' +
-            '<button class="btn btn-danger btn-sm delete-user" data-uid="' + u.uid + '"' + (u.uid === BibleDB.getCurrentUser().uid ? ' disabled' : '') + '>Удалить профиль</button>' +
+            '<button class="btn btn-outline btn-sm reset-user" data-uid="' + u.uid + '">Сбросить пароль</button>' +
           '</td>';
         tbody.appendChild(tr);
       });
@@ -72,23 +72,59 @@
         });
       });
 
-      tbody.querySelectorAll('.delete-user').forEach(function(btn) {
+      tbody.querySelectorAll('.reset-user').forEach(function(btn) {
         btn.addEventListener('click', function() {
-          var uid = btn.getAttribute('data-uid');
-          if (confirm('Удалить профиль? Учётная запись входа и ответы сохранятся. При следующем входе будет создан профиль ученика.')) {
-            BibleDB.deleteUserProfile(uid).then(loadUsers).catch(showError);
-          }
+          var u = allUsers.find(function(x) { return x.uid === btn.getAttribute('data-uid'); });
+          if (u) openRecovery('', u.email, u.name);
         });
       });
     }
 
+    var recoveryModal = document.getElementById('recoveryModal');
+    var recoveryStatus = document.getElementById('recoveryStatus');
+    var restoreBtn = document.getElementById('restoreProfileBtn');
+    function openRecovery(uid, email, name) {
+      document.getElementById('recoveryForm').reset();
+      document.getElementById('recoveryUid').value = uid || '';
+      document.getElementById('recoveryEmail').value = email || '';
+      document.getElementById('recoveryName').value = name || '';
+      document.getElementById('restoreFields').hidden = !uid;
+      restoreBtn.hidden = !uid;
+      recoveryStatus.textContent = uid ? 'Email должен совпадать с прежним аккаунтом этого ученика.' : 'После смены пароля и входа удалённый профиль восстановится автоматически.';
+      recoveryModal.classList.add('active');
+    }
+    document.getElementById('recoverUserBtn').addEventListener('click', function() { openRecovery('','',''); });
+    document.getElementById('cancelRecovery').addEventListener('click', function() { recoveryModal.classList.remove('active'); });
+    document.getElementById('recoveryForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var button = this.querySelector('[type=submit]'); button.disabled = true;
+      recoveryStatus.textContent = 'Отправляем письмо…';
+      BibleDB.resetPassword(document.getElementById('recoveryEmail').value.trim()).then(function() {
+        recoveryStatus.textContent = 'Запрос принят. Если для этого email есть аккаунт, придёт письмо для смены пароля. Проверьте также «Спам».';
+      }).catch(function() { recoveryStatus.textContent = 'Не удалось отправить письмо. Проверьте email и соединение, затем повторите.'; }).finally(function() { button.disabled = false; });
+    });
+    restoreBtn.addEventListener('click', function() {
+      var emailInput = document.getElementById('recoveryEmail');
+      var name = document.getElementById('recoveryName').value.trim();
+      if (!emailInput.reportValidity() || !name) { recoveryStatus.textContent = 'Укажите email и имя ученика.'; return; }
+      var uid = document.getElementById('recoveryUid').value, email = emailInput.value.trim();
+      if (allUsers.some(function(u) { return u.uid !== uid && (u.email || '').toLowerCase() === email.toLowerCase(); })) { recoveryStatus.textContent = 'С этим email уже есть другой профиль. Проверьте данные.'; return; }
+      restoreBtn.disabled = true;
+      BibleDB.restoreUserProfile(uid, { name:name, email:email }).then(function() {
+        recoveryStatus.textContent = 'Профиль восстановлен. Классы и ответы сохранены. При необходимости отправьте письмо для смены пароля.';
+        restoreBtn.hidden = true;
+        return loadUsers();
+      }).catch(function(err) { recoveryStatus.textContent = 'Не удалось восстановить профиль. Обновите список и повторите попытку.'; }).finally(function() { restoreBtn.disabled = false; });
+    });
+
     // Modal
     var modal = document.getElementById('userModal');
     var form = document.getElementById('userForm');
+    var pendingCreateUid = null;
 
     document.getElementById('addUserBtn').addEventListener('click', function() {
       document.getElementById('modalTitle').textContent = 'Добавить пользователя';
-      form.reset();
+      form.reset(); pendingCreateUid = null;
       document.getElementById('editUid').value = '';
       document.getElementById('userFormError').classList.remove('visible');
       document.getElementById('uEmail').removeAttribute('disabled');
@@ -156,7 +192,9 @@
           return;
         }
 
-        BibleDB.createUser(email, password).then(function(cred) {
+        (pendingCreateUid ? Promise.resolve({user:{uid:pendingCreateUid}}) : BibleDB.createUser(email, password)).then(function(cred) {
+          pendingCreateUid = cred.user.uid;
+          document.getElementById('uEmail').disabled = true;
           return BibleDB.setUserProfile(cred.user.uid, {
             name: name,
             email: email,
@@ -168,8 +206,8 @@
           submitBtn.disabled = false;
           loadUsers().catch(showError);
         }).catch(function(err) {
-          var msg = 'Ошибка создания';
-          if (err.code === 'auth/email-already-in-use') msg = 'Этот email уже зарегистрирован';
+          var msg = pendingCreateUid ? 'Аккаунт входа создан, но профиль не сохранён. Нажмите «Сохранить» ещё раз, не закрывая окно.' : 'Ошибка создания';
+          if (err.code === 'auth/email-already-in-use') { msg = 'Аккаунт с этим email уже существует. Не создавайте его повторно: используйте «Восстановить доступ / профиль» или «Забыли пароль?» на странице входа.'; }
           if (err.code === 'auth/invalid-email') msg = 'Некорректный email';
           errorEl.textContent = msg;
           errorEl.classList.add('visible');
@@ -284,7 +322,15 @@
             var link = treeNode('a','Открыть класс →'); link.href = '/classes/?id=' + encodeURIComponent(c.id); branch.appendChild(link);
             var members = treeNode('ul');
             if (!c.memberUids.length) members.appendChild(treeNode('li','Ученики пока не добавлены','tree-meta'));
-            c.memberUids.forEach(function(uid) { var student = allUsers.find(function(u) { return u.uid === uid; }); members.appendChild(treeNode('li',student ? student.name + ' · ' + student.email : 'Участник ' + uid)); });
+            c.memberUids.forEach(function(uid) {
+              var student = allUsers.find(function(u) { return u.uid === uid; });
+              var member = treeNode('li',student ? student.name + ' · ' + student.email : 'Профиль ученика удалён. ');
+              if (!student) {
+                var restore = treeNode('button','Восстановить профиль','btn btn-outline btn-sm'); restore.type = 'button';
+                restore.addEventListener('click',function() { openRecovery(uid,'',''); }); member.appendChild(restore);
+              }
+              members.appendChild(member);
+            });
             branch.appendChild(members); row.appendChild(branch); children.appendChild(row);
           });
           details.appendChild(children); item.appendChild(details); list.appendChild(item);

@@ -20,6 +20,9 @@ title: "Админ-панель"
     <h2>Управление пользователями</h2>
     <button class="btn btn-primary btn-sm" id="addUserBtn">+ Добавить</button>
   </div>
+  <p>Забыли пароль? Отправьте пользователю письмо для установки нового. Удалять профиль для этого не нужно.</p>
+  <button type="button" class="btn btn-outline btn-sm" id="recoverUserBtn">Восстановить доступ / профиль</button>
+  <p id="accountNotice" role="status"></p>
   <div class="admin-table-wrap"><table class="admin-table">
     <thead>
       <tr>
@@ -109,6 +112,27 @@ title: "Админ-панель"
       <div class="modal-actions">
         <button type="button" class="btn btn-outline btn-sm" id="cancelModal">Отмена</button>
         <button type="submit" class="btn btn-primary btn-sm">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="recoveryModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="recoveryTitle">
+    <h3 id="recoveryTitle">Восстановить доступ</h3>
+    <p>Аккаунт входа сохраняется даже после удаления профиля. Новый пароль ученик задаёт сам по ссылке из письма.</p>
+    <form id="recoveryForm">
+      <div class="form-group"><label for="recoveryEmail">Email аккаунта</label><input id="recoveryEmail" type="email" required autocomplete="email"></div>
+      <div id="restoreFields" hidden>
+        <p>Восстановление сохранит прежнее участие в классах и ответы. Проверьте имя и email ученика.</p>
+        <div class="form-group"><label for="recoveryUid">UID аккаунта</label><input id="recoveryUid" readonly></div>
+        <div class="form-group"><label for="recoveryName">Имя ученика</label><input id="recoveryName"></div>
+      </div>
+      <p id="recoveryStatus" role="status"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline btn-sm" id="cancelRecovery">Закрыть</button>
+        <button type="button" class="btn btn-outline btn-sm" id="restoreProfileBtn" hidden>Восстановить профиль</button>
+        <button type="submit" class="btn btn-primary btn-sm">Отправить письмо</button>
       </div>
     </form>
   </div>

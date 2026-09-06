@@ -81,7 +81,7 @@
         c.memberUids.forEach(function(uid) {
           var student = data[0].find(function(s) { return s.id === uid; });
           var answers = data[1].filter(function(a) { return a._uid === uid; });
-          var details = el('details'); var summary = el('summary', (student ? student.name + ' (' + student.email + ')' : 'Участник ' + uid) + ' · уроков с ответами: ' + answers.filter(function(a) { return Object.keys(a).some(function(k) { return /^q/.test(k); }); }).length);
+          var details = el('details'); var summary = el('summary', (student ? student.name + ' (' + student.email + ')' : 'Профиль ученика недоступен (обратитесь к администратору)') + ' · уроков с ответами: ' + answers.filter(function(a) { return Object.keys(a).some(function(k) { return /^q/.test(k); }); }).length);
           details.appendChild(summary);
           if (!answers.length) details.appendChild(el('p', 'Ответов пока нет.'));
           answers.forEach(function(a) {
@@ -151,7 +151,7 @@
   function renderStudentPicker() {
     var box = byId('studentPicker'), search = byId('studentSearch').value.toLocaleLowerCase('ru'); box.replaceChildren();
     var available = students.slice();
-    selectedMembers.forEach(function(uid) { if (!available.some(function(s) { return s.id === uid; })) available.push({ id:uid, name:'Участник ' + uid, email:'профиль недоступен' }); });
+    selectedMembers.forEach(function(uid) { if (!available.some(function(s) { return s.id === uid; })) available.push({ id:uid, name:'Профиль ученика недоступен (обратитесь к администратору)', email:'профиль недоступен' }); });
     available.filter(function(s) { return (s.name + ' ' + s.email).toLocaleLowerCase('ru').includes(search); }).forEach(function(s) {
       box.appendChild(checkRow(s.name + ' (' + s.email + ')', selectedMembers.includes(s.id), function(checked) {
         if (checked) selectedMembers.push(s.id); else selectedMembers = selectedMembers.filter(function(uid) { return uid !== s.id; });

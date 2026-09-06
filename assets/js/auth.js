@@ -44,6 +44,16 @@
   }
   function initLoginForm() {
     var form = document.getElementById('loginForm'); if (!form) return;
+    var forgot = document.getElementById('forgotPassword');
+    if (forgot) forgot.addEventListener('click',function() {
+      var email = document.getElementById('username'), status = document.getElementById('passwordResetStatus');
+      if (!email.reportValidity()) return;
+      if (!window.BibleDB) { status.textContent = 'Сервис входа не загрузился. Обновите страницу.'; return; }
+      forgot.disabled = true; status.textContent = 'Отправляем письмо…';
+      BibleDB.resetPassword(email.value.trim()).then(function() {
+        status.textContent = 'Если для этого email есть аккаунт, придёт письмо для смены пароля. Проверьте также «Спам».';
+      }).catch(function() { status.textContent = 'Не удалось отправить письмо. Проверьте соединение и повторите позже.'; }).finally(function() { forgot.disabled = false; });
+    });
     form.addEventListener('submit',function(e) {
       e.preventDefault();
       var error = document.getElementById('loginError'), submit = form.querySelector('[type=submit]');

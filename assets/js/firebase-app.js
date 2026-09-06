@@ -71,8 +71,19 @@
     });
   }
 
-  function deleteUserProfile(uid) {
-    return db.collection('users').doc(uid).delete();
+  function resetPassword(email) {
+    auth.languageCode = 'ru';
+    return auth.sendPasswordResetEmail(email, { url: window.location.origin + '/login/' });
+  }
+
+  function restoreUserProfile(uid, data) {
+    var ref = db.collection('users').doc(uid);
+    return db.runTransaction(function(tx) {
+      return tx.get(ref).then(function(snapshot) {
+        if (snapshot.exists) throw new Error('Профиль уже существует. Обновите список пользователей.');
+        tx.set(ref, { name: data.name, email: data.email, role: 'user', restoredAt: new Date().toISOString() });
+      });
+    });
   }
 
   // ========== Answers (Firestore) ==========
@@ -167,7 +178,8 @@
     getUserProfile: getUserProfile,
     setUserProfile: setUserProfile,
     getAllUsers: getAllUsers,
-    deleteUserProfile: deleteUserProfile,
+    resetPassword: resetPassword,
+    restoreUserProfile: restoreUserProfile,
     getAnswers: getAnswers,
     saveAnswers: saveAnswers,
     getUserAnswers: getUserAnswers,
